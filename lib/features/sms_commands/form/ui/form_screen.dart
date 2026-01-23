@@ -36,7 +36,7 @@ class FormScreen extends HookConsumerWidget {
       appBar: XAppBar(
         title: Text(
           title,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: const TextStyle(fontWeight: .bold),
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -68,7 +68,7 @@ class FormScreen extends HookConsumerWidget {
                       child: Padding(
                         padding: const EdgeInsets.all(20),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: .start,
                           children: [
                             Row(
                               children: [
@@ -84,7 +84,7 @@ class FormScreen extends HookConsumerWidget {
                                       .textTheme
                                       .titleMedium
                                       ?.copyWith(
-                                        fontWeight: FontWeight.bold,
+                                        fontWeight: .bold,
                                         color: colorScheme.primary,
                                       ),
                                 ),
@@ -102,7 +102,7 @@ class FormScreen extends HookConsumerWidget {
                                 ),
                               ),
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                                crossAxisAlignment: .start,
                                 children: [
                                   Row(
                                     children: [
@@ -120,7 +120,7 @@ class FormScreen extends HookConsumerWidget {
                                             ?.copyWith(
                                               color:
                                                   colorScheme.onSurfaceVariant,
-                                              fontWeight: FontWeight.w500,
+                                              fontWeight: .w500,
                                             ),
                                       ),
                                     ],
@@ -133,7 +133,7 @@ class FormScreen extends HookConsumerWidget {
                                         .bodyMedium
                                         ?.copyWith(
                                           color: colorScheme.onSurface,
-                                          fontWeight: FontWeight.w500,
+                                          fontWeight: .w500,
                                         ),
                                   ),
                                 ],
@@ -152,13 +152,13 @@ class FormScreen extends HookConsumerWidget {
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   if (formState.formValues.isEmpty) ...[
                     Text(
                       l10n.fillForm,
                       style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
+                            fontWeight: .bold,
                             color: colorScheme.onSurface,
                           ),
                     ),
@@ -198,7 +198,7 @@ class FormScreen extends HookConsumerWidget {
                                     ],
                                   ),
                                   backgroundColor: colorScheme.primary,
-                                  behavior: SnackBarBehavior.floating,
+                                  behavior: .floating,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
@@ -218,7 +218,7 @@ class FormScreen extends HookConsumerWidget {
                                     ],
                                   ),
                                   backgroundColor: colorScheme.error,
-                                  behavior: SnackBarBehavior.floating,
+                                  behavior: .floating,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),

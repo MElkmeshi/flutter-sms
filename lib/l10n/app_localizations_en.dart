@@ -101,4 +101,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get saved => 'Saved';
+
+  @override
+  String get savedValues => 'Saved Values';
+
+  @override
+  String get noSavedValues => 'No saved values yet';
+
+  @override
+  String get noSavedValuesHint => 'Enter a value and save it for quick access';
+
+  @override
+  String get saveCurrentValue => 'Save Current Value';
+
+  @override
+  String get valueName => 'Name';
+
+  @override
+  String get valueNameHint => 'e.g. My Account';
+
+  @override
+  String get valueNameRequired => 'Name is required';
+
+  @override
+  String get deleteSavedValue => 'Delete saved value?';
 }

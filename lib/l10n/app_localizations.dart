@@ -274,6 +274,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Saved'**
   String get saved;
+
+  /// No description provided for @savedValues.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved Values'**
+  String get savedValues;
+
+  /// No description provided for @noSavedValues.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved values yet'**
+  String get noSavedValues;
+
+  /// No description provided for @noSavedValuesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a value and save it for quick access'**
+  String get noSavedValuesHint;
+
+  /// No description provided for @saveCurrentValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Current Value'**
+  String get saveCurrentValue;
+
+  /// No description provided for @valueName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get valueName;
+
+  /// No description provided for @valueNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. My Account'**
+  String get valueNameHint;
+
+  /// No description provided for @valueNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required'**
+  String get valueNameRequired;
+
+  /// No description provided for @deleteSavedValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete saved value?'**
+  String get deleteSavedValue;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

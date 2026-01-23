@@ -5,12 +5,16 @@ class Category extends Equatable {
   final String id;
   final String nameEn;
   final String nameAr;
+  final String? icon;
+  final String? color;
   final List<ServiceProvider> providers;
 
   const Category({
     required this.id,
     required this.nameEn,
     required this.nameAr,
+    this.icon,
+    this.color,
     required this.providers,
   });
 
@@ -19,6 +23,8 @@ class Category extends Equatable {
       id: json['id'] as String,
       nameEn: json['name_en'] as String,
       nameAr: json['name_ar'] as String,
+      icon: json['icon'] as String?,
+      color: json['color'] as String?,
       providers:
           (json['providers'] as List)
               .map((p) => ServiceProvider.fromJson(p as Map<String, dynamic>))
@@ -27,5 +33,5 @@ class Category extends Equatable {
   }
 
   @override
-  List<Object?> get props => [id, nameEn, nameAr, providers];
+  List<Object?> get props => [id, nameEn, nameAr, icon, color, providers];
 }

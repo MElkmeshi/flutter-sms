@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:sms/l10n/app_localizations.dart';
 import 'package:sms/domain/model/input_field.dart';
 import 'package:sms/features/sms_commands/form/logic/form_controller.dart';
+import 'package:sms/features/sms_commands/form/ui/saved_values_bottom_sheet.dart';
 
 class DynamicFormWidget extends HookConsumerWidget {
   const DynamicFormWidget({
@@ -52,17 +53,17 @@ class DynamicFormWidget extends HookConsumerWidget {
     return Form(
       key: formKey,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: .stretch,
         children: [
           // Form Header with Clear Button
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: .spaceBetween,
             children: [
               Text(
                 l10n.formFields,
                 style: GoogleFonts.ibmPlexSans(
                   fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: .bold,
                   color: colorScheme.onSurface,
                 ),
               ),
@@ -80,7 +81,7 @@ class DynamicFormWidget extends HookConsumerWidget {
                   l10n.clearAll,
                   style: GoogleFonts.ibmPlexSans(
                     fontSize: 12,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: .w500,
                   ),
                 ),
                 style: TextButton.styleFrom(
@@ -132,7 +133,7 @@ class DynamicFormWidget extends HookConsumerWidget {
                 l10n.sendSms,
                 style: const TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: .bold,
                 ),
               ),
               style: ElevatedButton.styleFrom(
@@ -163,7 +164,7 @@ class DynamicFormWidget extends HookConsumerWidget {
     final hasSavedValue = formValues[field.id]?.isNotEmpty == true;
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         // Field label with saved indicator
         Row(
@@ -173,7 +174,7 @@ class DynamicFormWidget extends HookConsumerWidget {
                 label,
                 style: GoogleFonts.ibmPlexSans(
                   fontSize: 14,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: .w600,
                   color: colorScheme.onSurface,
                 ),
               ),
@@ -187,7 +188,7 @@ class DynamicFormWidget extends HookConsumerWidget {
                   border: Border.all(color: colorScheme.primary),
                 ),
                 child: Row(
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisSize: .min,
                   children: [
                     Icon(
                       Icons.check_circle,
@@ -199,7 +200,7 @@ class DynamicFormWidget extends HookConsumerWidget {
                       l10n.saved,
                       style: GoogleFonts.ibmPlexSans(
                         fontSize: 10,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: .w600,
                         color: colorScheme.primary,
                       ),
                     ),
@@ -246,13 +247,22 @@ class DynamicFormWidget extends HookConsumerWidget {
               _getFieldIcon(field.id),
               color: colorScheme.onSurfaceVariant,
             ),
-            suffixIcon: formValues[field.id]?.isNotEmpty == true
-                ? Icon(
-                    Icons.check_circle,
-                    color: colorScheme.primary,
-                    size: 20,
-                  )
-                : null,
+            suffixIcon: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.bookmark_border, size: 20, color: colorScheme.primary),
+                  onPressed: () => _showSavedValuesSheet(
+                    context, ref, field, label, controllers[field.id]!, formValues,
+                  ),
+                ),
+                if (formValues[field.id]?.isNotEmpty == true)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child: Icon(Icons.check_circle, color: colorScheme.primary, size: 20),
+                  ),
+              ],
+            ),
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
@@ -309,6 +319,34 @@ class DynamicFormWidget extends HookConsumerWidget {
       default:
         return const SizedBox();
     }
+  }
+
+  void _showSavedValuesSheet(
+    BuildContext context,
+    WidgetRef ref,
+    InputField field,
+    String label,
+    TextEditingController textController,
+    Map<String, String> formValues,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => SavedValuesBottomSheet(
+        fieldId: field.id,
+        fieldLabel: label,
+        currentValue: textController.text,
+        onValueSelected: (value) {
+          textController.text = value;
+          ref
+              .read(FormController.provider(formParams).notifier)
+              .updateField(field.id, value);
+        },
+      ),
+    );
   }
 
   IconData _getFieldIcon(String fieldId) {

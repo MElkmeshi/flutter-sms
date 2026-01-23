@@ -1,4 +1,12 @@
 {
+    "theme": {
+        "primary_color": "#2196F3",
+        "default_locale": "ar",
+        "supported_locales": [
+            "en",
+            "ar"
+        ]
+    },
     "categories": [
         {
             "id": "banking",
@@ -240,7 +248,9 @@
                                 }
                             ]
                         }
-                    ]
+                    ],
+                    "icon": "account_balance",
+                    "color": "#2E7D32"
                 },
                 {
                     "id": "jumhouria",
@@ -535,7 +545,9 @@
                                 }
                             ]
                         }
-                    ]
+                    ],
+                    "icon": "account_balance",
+                    "color": "#1565C0"
                 },
                 {
                     "id": "jumhouria-efa",
@@ -679,7 +691,9 @@
                                 }
                             ]
                         }
-                    ]
+                    ],
+                    "icon": "credit_card",
+                    "color": "#1565C0"
                 },
                 {
                     "id": "yaqeen",
@@ -763,7 +777,9 @@
                                 }
                             ]
                         }
-                    ]
+                    ],
+                    "icon": "account_balance",
+                    "color": "#6A1B9A"
                 },
                 {
                     "id": "ncb",
@@ -919,7 +935,9 @@
                                 }
                             ]
                         }
-                    ]
+                    ],
+                    "icon": "account_balance",
+                    "color": "#C62828"
                 },
                 {
                     "id": "assaray",
@@ -1760,15 +1778,21 @@
                                 }
                             ]
                         }
-                    ]
+                    ],
+                    "icon": "account_balance",
+                    "color": "#00838F"
                 }
-            ]
+            ],
+            "icon": "account_balance",
+            "color": "#43A047"
         },
         {
             "id": "government",
             "name_en": "Government",
             "name_ar": "الحكومة",
-            "providers": []
+            "providers": [],
+            "icon": "business",
+            "color": "#1E88E5"
         },
         {
             "id": "telecom",
@@ -2037,9 +2061,13 @@
                                 }
                             ]
                         }
-                    ]
+                    ],
+                    "icon": "cell_tower",
+                    "color": "#E65100"
                 }
-            ]
+            ],
+            "icon": "cell_tower",
+            "color": "#FB8C00"
         }
     ]
 }

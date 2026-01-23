@@ -45,5 +45,13 @@
         "type": "String"
       }
     }
-  }
+  },
+  "savedValues": "القيم المحفوظة",
+  "noSavedValues": "لا توجد قيم محفوظة بعد",
+  "noSavedValuesHint": "أدخل قيمة واحفظها للوصول السريع",
+  "saveCurrentValue": "حفظ القيمة الحالية",
+  "valueName": "الاسم",
+  "valueNameHint": "مثال: حسابي",
+  "valueNameRequired": "الاسم مطلوب",
+  "deleteSavedValue": "حذف القيمة المحفوظة؟"
 }

@@ -9,7 +9,20 @@
       "Bash(flutter run:*)",
       "Bash(open:*)",
       "Bash(xcrun simctl list:*)",
-      "Bash(flutter clean:*)"
+      "Bash(flutter clean:*)",
+      "Bash(python3:*)",
+      "Bash(dart pub global activate:*)",
+      "Bash(export PATH=\"$PATH:$HOME/.pub-cache/bin\")",
+      "Bash(fvm install:*)",
+      "Bash(fvm use:*)",
+      "Bash(fvm flutter pub:*)",
+      "Bash(fvm flutter analyze:*)",
+      "Bash(fvm flutter gen-l10n:*)",
+      "Bash(/Users/melkmeshi/Sites/repo/flutter-sms/.fvm/flutter_sdk/bin/flutter gen-l10n:*)",
+      "Bash(/Users/melkmeshi/Sites/repo/flutter-sms/.fvm/flutter_sdk/bin/flutter analyze:*)",
+      "Bash(.fvm/flutter_sdk/bin/flutter analyze:*)",
+      "Bash(.fvm/flutter_sdk/bin/flutter devices:*)",
+      "Bash(.fvm/flutter_sdk/bin/flutter emulators:*)"
     ]
   }
 }

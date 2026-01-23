@@ -7,6 +7,8 @@ class ServiceProvider extends Equatable {
   final String nameAr;
   final String? descriptionEn;
   final String? descriptionAr;
+  final String? icon;
+  final String? color;
   final List<ActionItem> actions;
 
   const ServiceProvider({
@@ -15,6 +17,8 @@ class ServiceProvider extends Equatable {
     required this.nameAr,
     this.descriptionEn,
     this.descriptionAr,
+    this.icon,
+    this.color,
     required this.actions,
   });
 
@@ -25,6 +29,8 @@ class ServiceProvider extends Equatable {
       nameAr: json['name_ar'] as String,
       descriptionEn: json['description_en'] as String?,
       descriptionAr: json['description_ar'] as String?,
+      icon: json['icon'] as String?,
+      color: json['color'] as String?,
       actions:
           (json['actions'] as List)
               .map((a) => ActionItem.fromJson(a as Map<String, dynamic>))
@@ -33,5 +39,5 @@ class ServiceProvider extends Equatable {
   }
 
   @override
-  List<Object?> get props => [id, nameEn, nameAr, descriptionEn, descriptionAr, actions];
+  List<Object?> get props => [id, nameEn, nameAr, descriptionEn, descriptionAr, icon, color, actions];
 }

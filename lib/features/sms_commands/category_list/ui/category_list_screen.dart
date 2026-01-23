@@ -39,7 +39,7 @@ class CategoryListScreen extends HookConsumerWidget {
     final slideAnimation = useMemoized(
       () => Tween<Offset>(
         begin: const Offset(0, 0.3),
-        end: Offset.zero,
+        end: .zero,
       ).animate(
         CurvedAnimation(parent: slideController, curve: Curves.easeOutCubic),
       ),
@@ -75,7 +75,7 @@ class CategoryListScreen extends HookConsumerWidget {
                     l10n.appTitle,
                     style: GoogleFonts.ibmPlexSans(
                       fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: .bold,
                       color: colorScheme.onSurface,
                     ),
                   ),
@@ -146,7 +146,7 @@ class CategoryListScreen extends HookConsumerWidget {
     return Padding(
       padding: const EdgeInsets.all(32),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: .center,
         children: [
           const SizedBox(height: 60),
           FadeTransition(
@@ -173,7 +173,7 @@ class CategoryListScreen extends HookConsumerWidget {
                   l10n.loadingServices,
                   style: GoogleFonts.ibmPlexSans(
                     fontSize: 16,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: .w500,
                     color: colorScheme.onSurfaceVariant,
                   ),
                 ),
@@ -200,7 +200,7 @@ class CategoryListScreen extends HookConsumerWidget {
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [
               // Welcome Section
               Container(
@@ -224,7 +224,7 @@ class CategoryListScreen extends HookConsumerWidget {
                   ],
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
                     Row(
                       children: [
@@ -243,13 +243,13 @@ class CategoryListScreen extends HookConsumerWidget {
                         const SizedBox(width: 16),
                         Expanded(
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: .start,
                             children: [
                               Text(
                                 l10n.selectCategory,
                                 style: GoogleFonts.ibmPlexSans(
                                   fontSize: 20,
-                                  fontWeight: FontWeight.bold,
+                                  fontWeight: .bold,
                                   color: colorScheme.onSurface,
                                 ),
                               ),
@@ -258,7 +258,7 @@ class CategoryListScreen extends HookConsumerWidget {
                                 l10n.selectCategoryDescription,
                                 style: GoogleFonts.ibmPlexSans(
                                   fontSize: 14,
-                                  fontWeight: FontWeight.w400,
+                                  fontWeight: .w400,
                                   color: colorScheme.onSurfaceVariant,
                                 ),
                               ),
@@ -313,7 +313,7 @@ class CategoryListScreen extends HookConsumerWidget {
     return Padding(
       padding: const EdgeInsets.all(32),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: .center,
         children: [
           const SizedBox(height: 60),
           FadeTransition(
@@ -343,17 +343,17 @@ class CategoryListScreen extends HookConsumerWidget {
                     l10n.error,
                     style: GoogleFonts.ibmPlexSans(
                       fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: .bold,
                       color: colorScheme.error,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     errorMessage,
-                    textAlign: TextAlign.center,
+                    textAlign: .center,
                     style: GoogleFonts.ibmPlexSans(
                       fontSize: 14,
-                      fontWeight: FontWeight.w400,
+                      fontWeight: .w400,
                       color: colorScheme.onSurfaceVariant,
                     ),
                   ),
@@ -388,7 +388,7 @@ class CategoryListScreen extends HookConsumerWidget {
           'Config URL',
           style: GoogleFonts.ibmPlexSans(
             fontSize: 18,
-            fontWeight: FontWeight.bold,
+            fontWeight: .bold,
           ),
         ),
         content: TextField(
@@ -403,14 +403,14 @@ class CategoryListScreen extends HookConsumerWidget {
             },
             child: Text(
               'Reset',
-              style: GoogleFonts.ibmPlexSans(fontWeight: FontWeight.w600),
+              style: GoogleFonts.ibmPlexSans(fontWeight: .w600),
             ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(
               'Cancel',
-              style: GoogleFonts.ibmPlexSans(fontWeight: FontWeight.w600),
+              style: GoogleFonts.ibmPlexSans(fontWeight: .w600),
             ),
           ),
           TextButton(
@@ -421,7 +421,7 @@ class CategoryListScreen extends HookConsumerWidget {
             },
             child: Text(
               'Save',
-              style: GoogleFonts.ibmPlexSans(fontWeight: FontWeight.w600),
+              style: GoogleFonts.ibmPlexSans(fontWeight: .w600),
             ),
           ),
         ],
@@ -440,14 +440,14 @@ class CategoryListScreen extends HookConsumerWidget {
           l10n.about,
           style: GoogleFonts.ibmPlexSans(
             fontSize: 18,
-            fontWeight: FontWeight.bold,
+            fontWeight: .bold,
           ),
         ),
         content: Text(
           l10n.aboutDescription,
           style: GoogleFonts.ibmPlexSans(
             fontSize: 14,
-            fontWeight: FontWeight.w400,
+            fontWeight: .w400,
           ),
         ),
         actions: [
@@ -455,7 +455,7 @@ class CategoryListScreen extends HookConsumerWidget {
             onPressed: () => Navigator.pop(context),
             child: Text(
               l10n.ok,
-              style: GoogleFonts.ibmPlexSans(fontWeight: FontWeight.w600),
+              style: GoogleFonts.ibmPlexSans(fontWeight: .w600),
             ),
           ),
         ],

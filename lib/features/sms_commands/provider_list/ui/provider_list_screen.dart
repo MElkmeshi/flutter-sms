@@ -33,7 +33,7 @@ class ProviderListScreen extends HookConsumerWidget {
       appBar: XAppBar(
         title: Text(
           l10n.selectProvider,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: const TextStyle(fontWeight: .bold),
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -46,7 +46,7 @@ class ProviderListScreen extends HookConsumerWidget {
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   Row(
                     children: [
@@ -59,7 +59,7 @@ class ProviderListScreen extends HookConsumerWidget {
                       Text(
                         categoryName,
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
+                              fontWeight: .bold,
                               color: colorScheme.primary,
                             ),
                       ),
@@ -69,7 +69,7 @@ class ProviderListScreen extends HookConsumerWidget {
                   Text(
                     l10n.selectProvider,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
+                          fontWeight: .bold,
                           color: colorScheme.onSurface,
                         ),
                   ),

@@ -1,7 +1,8 @@
 {
-    "workbench.colorCustomizations": {
-        "activityBar.background": "#342E07",
-        "titleBar.activeBackground": "#49400A",
-        "titleBar.activeForeground": "#FDFBEE"
-    }
+  "workbench.colorCustomizations": {
+    "activityBar.background": "#342E07",
+    "titleBar.activeBackground": "#49400A",
+    "titleBar.activeForeground": "#FDFBEE"
+  },
+  "dart.flutterSdkPath": ".fvm/versions/3.38.7"
 }

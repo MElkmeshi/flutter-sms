@@ -6,6 +6,8 @@ import 'package:sms/l10n/app_localizations.dart';
 import 'package:sms/core/services/local_storage_service.dart';
 import 'package:sms/core/routing/app_router.dart';
 import 'package:sms/core/initializer/app_providers.dart';
+import 'package:sms/core/utils/icon_mapper.dart';
+import 'package:sms/domain/model/app_config.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,117 +27,133 @@ void main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final appRouter = AppRouter();
+
+    // Watch appConfig for dynamic theme
+    final appConfigAsync = ref.watch(appConfigProvider);
+    final themeConfig = appConfigAsync.whenOrNull(data: (config) => config.theme)
+        ?? ref.read(configServiceProvider).getCachedThemeConfig()
+        ?? const ThemeConfig();
+
+    final primaryColor = IconMapper.colorFromHex(
+      themeConfig.primaryColor,
+      fallback: const Color(0xFF2196F3),
+    );
+
+    final locales = themeConfig.supportedLocales
+        .map((code) => Locale(code))
+        .toList();
+
+    final defaultLocale = Locale(themeConfig.defaultLocale);
 
     return MaterialApp.router(
       title: 'SMS Commands',
       routerConfig: appRouter.config(),
 
       // Localization
-        localizationsDelegates: [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: const [Locale('en'), Locale('ar')],
-        locale: const Locale('ar'), // Default to Arabic
-        // Theme
-        theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF2196F3),
-            brightness: Brightness.light,
+      localizationsDelegates: [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: locales,
+      locale: defaultLocale,
+
+      // Theme
+      theme: _buildTheme(context, primaryColor),
+    );
+  }
+
+  ThemeData _buildTheme(BuildContext context, Color primaryColor) {
+    return ThemeData(
+      useMaterial3: true,
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: primaryColor,
+        brightness: .light,
+      ),
+
+      textTheme: GoogleFonts.ibmPlexSansTextTheme(
+        Theme.of(context).textTheme,
+      ),
+
+      fontFamily: 'IBM Plex Sans Arabic',
+
+      appBarTheme: AppBarTheme(
+        elevation: 0,
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.black87,
+        titleTextStyle: GoogleFonts.ibmPlexSans(
+          fontSize: 20,
+          fontWeight: .w600,
+          color: Colors.black87,
+        ),
+      ),
+
+      cardTheme: CardThemeData(
+        elevation: 3,
+        shadowColor: Colors.black.withAlpha(26),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+      ),
+
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          elevation: 3,
+          shadowColor: Colors.black.withAlpha(51),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
           ),
-
-          // Typography
-          textTheme: GoogleFonts.ibmPlexSansTextTheme(
-            Theme.of(context).textTheme,
-          ),
-
-          // Arabic font for Arabic locale
-          fontFamily: 'IBM Plex Sans Arabic',
-
-          appBarTheme: AppBarTheme(
-            elevation: 0,
-            centerTitle: true,
-            backgroundColor: Colors.transparent,
-            foregroundColor: Colors.black87,
-            titleTextStyle: GoogleFonts.ibmPlexSans(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-              color: Colors.black87,
-            ),
-          ),
-
-          cardTheme: CardThemeData(
-            elevation: 3,
-            shadowColor: Colors.black.withAlpha(26),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-          ),
-
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              elevation: 3,
-              shadowColor: Colors.black.withAlpha(51),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-              textStyle: GoogleFonts.ibmPlexSans(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-
-          inputDecorationTheme: InputDecorationTheme(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(color: Colors.grey, width: 1.5),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(color: Colors.grey, width: 1.5),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(
-                color: Color(0xFF2196F3),
-                width: 2.5,
-              ),
-            ),
-            filled: true,
-            fillColor: Colors.grey.shade50,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 20,
-              vertical: 16,
-            ),
-            labelStyle: GoogleFonts.ibmPlexSans(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-
-          // Snackbar theme
-          snackBarTheme: SnackBarThemeData(
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            contentTextStyle: GoogleFonts.ibmPlexSans(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+          textStyle: GoogleFonts.ibmPlexSans(
+            fontSize: 16,
+            fontWeight: .w600,
           ),
         ),
+      ),
+
+      inputDecorationTheme: InputDecorationTheme(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: Colors.grey, width: 1.5),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: Colors.grey, width: 1.5),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: primaryColor, width: 2.5),
+        ),
+        filled: true,
+        fillColor: Colors.grey.shade50,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 16,
+        ),
+        labelStyle: GoogleFonts.ibmPlexSans(
+          fontSize: 14,
+          fontWeight: .w500,
+        ),
+      ),
+
+      snackBarTheme: SnackBarThemeData(
+        behavior: .floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        contentTextStyle: GoogleFonts.ibmPlexSans(
+          fontSize: 14,
+          fontWeight: .w500,
+        ),
+      ),
     );
   }
 }

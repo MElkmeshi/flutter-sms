@@ -101,4 +101,28 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get saved => 'محفوظ';
+
+  @override
+  String get savedValues => 'القيم المحفوظة';
+
+  @override
+  String get noSavedValues => 'لا توجد قيم محفوظة بعد';
+
+  @override
+  String get noSavedValuesHint => 'أدخل قيمة واحفظها للوصول السريع';
+
+  @override
+  String get saveCurrentValue => 'حفظ القيمة الحالية';
+
+  @override
+  String get valueName => 'الاسم';
+
+  @override
+  String get valueNameHint => 'مثال: حسابي';
+
+  @override
+  String get valueNameRequired => 'الاسم مطلوب';
+
+  @override
+  String get deleteSavedValue => 'حذف القيمة المحفوظة؟';
 }

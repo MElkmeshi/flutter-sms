@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sms/l10n/app_localizations.dart';
 import 'package:sms/domain/model/service_provider.dart';
+import 'package:sms/core/utils/icon_mapper.dart';
 
 class ProviderListItem extends StatefulWidget {
   final ServiceProvider provider;
@@ -40,101 +41,6 @@ class _ProviderListItemState extends State<ProviderListItem>
     super.dispose();
   }
 
-  IconData _getProviderIcon(String providerId) {
-    // Make icons more dynamic based on provider ID and name
-    final id = providerId.toLowerCase();
-    final name = providerId.toLowerCase();
-
-    // Check for specific provider types
-    if (id.contains('bank') || name.contains('bank')) {
-      return Icons.account_balance;
-    } else if (id.contains('telecom') ||
-        id.contains('ltt') ||
-        name.contains('phone') ||
-        name.contains('mobile')) {
-      return Icons.phone_android;
-    } else if (id.contains('gov') ||
-        id.contains('government') ||
-        name.contains('public')) {
-      return Icons.business;
-    } else if (id.contains('electric') ||
-        id.contains('power') ||
-        name.contains('utility')) {
-      return Icons.power;
-    } else if (id.contains('water') || name.contains('water')) {
-      return Icons.water_drop;
-    } else if (id.contains('transport') ||
-        id.contains('bus') ||
-        name.contains('car')) {
-      return Icons.directions_car;
-    } else if (id.contains('health') ||
-        id.contains('medical') ||
-        name.contains('hospital')) {
-      return Icons.local_hospital;
-    } else if (id.contains('school') ||
-        id.contains('education') ||
-        name.contains('university')) {
-      return Icons.school;
-    } else if (id.contains('shop') ||
-        id.contains('retail') ||
-        name.contains('store')) {
-      return Icons.shopping_cart;
-    } else if (id.contains('movie') ||
-        id.contains('entertainment') ||
-        name.contains('media')) {
-      return Icons.movie;
-    } else {
-      return Icons.business;
-    }
-  }
-
-  Color _getProviderColor(String providerId) {
-    // Make colors more dynamic based on provider ID and name
-    final id = providerId.toLowerCase();
-    final name = providerId.toLowerCase();
-
-    if (id.contains('bank') || name.contains('bank')) {
-      return Colors.green.shade600;
-    } else if (id.contains('telecom') ||
-        id.contains('ltt') ||
-        name.contains('phone') ||
-        name.contains('mobile')) {
-      return Colors.orange.shade600;
-    } else if (id.contains('gov') ||
-        id.contains('government') ||
-        name.contains('public')) {
-      return Colors.blue.shade600;
-    } else if (id.contains('electric') ||
-        id.contains('power') ||
-        name.contains('utility')) {
-      return Colors.yellow.shade700;
-    } else if (id.contains('water') || name.contains('water')) {
-      return Colors.cyan.shade600;
-    } else if (id.contains('transport') ||
-        id.contains('bus') ||
-        name.contains('car')) {
-      return Colors.purple.shade600;
-    } else if (id.contains('health') ||
-        id.contains('medical') ||
-        name.contains('hospital')) {
-      return Colors.red.shade600;
-    } else if (id.contains('school') ||
-        id.contains('education') ||
-        name.contains('university')) {
-      return Colors.indigo.shade600;
-    } else if (id.contains('shop') ||
-        id.contains('retail') ||
-        name.contains('store')) {
-      return Colors.pink.shade600;
-    } else if (id.contains('movie') ||
-        id.contains('entertainment') ||
-        name.contains('media')) {
-      return Colors.deepPurple.shade600;
-    } else {
-      return Colors.grey.shade600;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -144,8 +50,8 @@ class _ProviderListItemState extends State<ProviderListItem>
         isArabic
             ? widget.provider.descriptionAr
             : widget.provider.descriptionEn;
-    final icon = _getProviderIcon(widget.provider.id);
-    final color = _getProviderColor(widget.provider.id);
+    final icon = IconMapper.fromString(widget.provider.icon, fallback: Icons.business);
+    final color = IconMapper.colorFromHex(widget.provider.color, fallback: Theme.of(context).colorScheme.primary);
 
     return GestureDetector(
       onTapDown: (_) {
@@ -192,14 +98,14 @@ class _ProviderListItemState extends State<ProviderListItem>
                       const SizedBox(width: 16),
                       Expanded(
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: .start,
                           children: [
                             Text(
                               name,
                               style: Theme.of(
                                 context,
                               ).textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
+                                fontWeight: .bold,
                                 color: Colors.black87,
                               ),
                             ),
@@ -208,7 +114,7 @@ class _ProviderListItemState extends State<ProviderListItem>
                               Text(
                                 description,
                                 maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
+                                overflow: .ellipsis,
                                 style: Theme.of(context).textTheme.bodySmall
                                     ?.copyWith(color: Colors.grey.shade600),
                               ),
@@ -229,7 +135,7 @@ class _ProviderListItemState extends State<ProviderListItem>
                                   context,
                                 ).textTheme.bodySmall?.copyWith(
                                   color: color,
-                                  fontWeight: FontWeight.w500,
+                                  fontWeight: .w500,
                                 ),
                               ),
                             ),
