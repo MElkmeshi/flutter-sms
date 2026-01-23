@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:sms/l10n/app_localizations.dart';
 import 'package:sms/domain/model/service_provider.dart';
 import 'package:sms/core/utils/icon_mapper.dart';
 
-class ProviderListItem extends StatefulWidget {
+class ProviderListItem extends StatelessWidget {
   final ServiceProvider provider;
   final VoidCallback onTap;
 
@@ -14,142 +15,92 @@ class ProviderListItem extends StatefulWidget {
   });
 
   @override
-  State<ProviderListItem> createState() => _ProviderListItemState();
-}
-
-class _ProviderListItemState extends State<ProviderListItem>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _scaleAnimation;
-  bool _isPressed = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 150),
-      vsync: this,
-    );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
-    );
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final colorScheme = Theme.of(context).colorScheme;
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
-    final name = isArabic ? widget.provider.nameAr : widget.provider.nameEn;
+    final name = isArabic ? provider.nameAr : provider.nameEn;
     final description =
-        isArabic
-            ? widget.provider.descriptionAr
-            : widget.provider.descriptionEn;
-    final icon = IconMapper.fromString(widget.provider.icon, fallback: Icons.business);
-    final color = IconMapper.colorFromHex(widget.provider.color, fallback: Theme.of(context).colorScheme.primary);
+        isArabic ? provider.descriptionAr : provider.descriptionEn;
+    final icon =
+        IconMapper.fromString(provider.icon, fallback: Icons.business);
+    final color = IconMapper.colorFromHex(
+      provider.color,
+      fallback: colorScheme.primary,
+    );
 
-    return GestureDetector(
-      onTapDown: (_) {
-        setState(() => _isPressed = true);
-        _animationController.forward();
-      },
-      onTapUp: (_) {
-        setState(() => _isPressed = false);
-        _animationController.reverse();
-      },
-      onTapCancel: () {
-        setState(() => _isPressed = false);
-        _animationController.reverse();
-      },
-      onTap: widget.onTap,
-      child: AnimatedBuilder(
-        animation: _scaleAnimation,
-        builder: (context, child) {
-          return Transform.scale(
-            scale: _scaleAnimation.value,
-            child: Card(
-              elevation: _isPressed ? 8 : 4,
-              child: Container(
+    return Card(
+      elevation: 0,
+      color: colorScheme.surfaceContainerLow,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
+              // Icon
+              Container(
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [color.withAlpha(26), color.withAlpha(13)],
-                  ),
+                  color: color.withAlpha(30),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: color.withAlpha(51),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Icon(icon, color: color, size: 28),
+                child: Icon(icon, color: color, size: 24),
+              ),
+              const SizedBox(width: 14),
+
+              // Name, description & action count
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name,
+                      style: GoogleFonts.ibmPlexSans(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: colorScheme.onSurface,
                       ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: .start,
-                          children: [
-                            Text(
-                              name,
-                              style: Theme.of(
-                                context,
-                              ).textTheme.titleMedium?.copyWith(
-                                fontWeight: .bold,
-                                color: Colors.black87,
-                              ),
-                            ),
-                            if (description != null) ...[
-                              const SizedBox(height: 4),
-                              Text(
-                                description,
-                                maxLines: 2,
-                                overflow: .ellipsis,
-                                style: Theme.of(context).textTheme.bodySmall
-                                    ?.copyWith(color: Colors.grey.shade600),
-                              ),
-                            ],
-                            const SizedBox(height: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: color.withAlpha(26),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                '${widget.provider.actions.length} ${l10n.actions}',
-                                style: Theme.of(
-                                  context,
-                                ).textTheme.bodySmall?.copyWith(
-                                  color: color,
-                                  fontWeight: .w500,
-                                ),
-                              ),
-                            ),
-                          ],
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (description != null) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        description,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.ibmPlexSans(
+                          fontSize: 12,
+                          color: colorScheme.onSurfaceVariant,
                         ),
                       ),
-                      Icon(Icons.arrow_forward_ios, color: color, size: 20),
                     ],
-                  ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${provider.actions.length} ${l10n.actions}',
+                      style: GoogleFonts.ibmPlexSans(
+                        fontSize: 12,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-          );
-        },
+
+              // Arrow
+              Icon(
+                Icons.arrow_forward_ios,
+                color: colorScheme.onSurfaceVariant,
+                size: 16,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
