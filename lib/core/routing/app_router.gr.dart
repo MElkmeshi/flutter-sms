@@ -16,9 +16,14 @@ abstract class _$AppRouter extends RootStackRouter {
   @override
   final Map<String, PageFactory> pagesMap = {
     ActionListRoute.name: (routeData) {
+      final args = routeData.argsAs<ActionListRouteArgs>();
       return AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const ActionListScreen(),
+        child: ActionListScreen(
+          key: args.key,
+          provider: args.provider,
+          category: args.category,
+        ),
       );
     },
     CategoryListRoute.name: (routeData) {
@@ -28,15 +33,24 @@ abstract class _$AppRouter extends RootStackRouter {
       );
     },
     FormRoute.name: (routeData) {
+      final args = routeData.argsAs<FormRouteArgs>();
       return AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const FormScreen(),
+        child: FormScreen(
+          key: args.key,
+          action: args.action,
+          provider: args.provider,
+        ),
       );
     },
     ProviderListRoute.name: (routeData) {
+      final args = routeData.argsAs<ProviderListRouteArgs>();
       return AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const ProviderListScreen(),
+        child: ProviderListScreen(
+          key: args.key,
+          category: args.category,
+        ),
       );
     },
   };
@@ -44,16 +58,45 @@ abstract class _$AppRouter extends RootStackRouter {
 
 /// generated route for
 /// [ActionListScreen]
-class ActionListRoute extends PageRouteInfo<void> {
-  const ActionListRoute({List<PageRouteInfo>? children})
-      : super(
+class ActionListRoute extends PageRouteInfo<ActionListRouteArgs> {
+  ActionListRoute({
+    Key? key,
+    required ServiceProvider provider,
+    required Category category,
+    List<PageRouteInfo>? children,
+  }) : super(
           ActionListRoute.name,
+          args: ActionListRouteArgs(
+            key: key,
+            provider: provider,
+            category: category,
+          ),
           initialChildren: children,
         );
 
   static const String name = 'ActionListRoute';
 
-  static const PageInfo<void> page = PageInfo<void>(name);
+  static const PageInfo<ActionListRouteArgs> page =
+      PageInfo<ActionListRouteArgs>(name);
+}
+
+class ActionListRouteArgs {
+  const ActionListRouteArgs({
+    this.key,
+    required this.provider,
+    required this.category,
+  });
+
+  final Key? key;
+
+  final ServiceProvider provider;
+
+  final Category category;
+
+  @override
+  String toString() {
+    return 'ActionListRouteArgs{key: $key, provider: $provider, category: $category}';
+  }
 }
 
 /// generated route for
@@ -72,28 +115,80 @@ class CategoryListRoute extends PageRouteInfo<void> {
 
 /// generated route for
 /// [FormScreen]
-class FormRoute extends PageRouteInfo<void> {
-  const FormRoute({List<PageRouteInfo>? children})
-      : super(
+class FormRoute extends PageRouteInfo<FormRouteArgs> {
+  FormRoute({
+    Key? key,
+    required ActionItem action,
+    required ServiceProvider provider,
+    List<PageRouteInfo>? children,
+  }) : super(
           FormRoute.name,
+          args: FormRouteArgs(
+            key: key,
+            action: action,
+            provider: provider,
+          ),
           initialChildren: children,
         );
 
   static const String name = 'FormRoute';
 
-  static const PageInfo<void> page = PageInfo<void>(name);
+  static const PageInfo<FormRouteArgs> page = PageInfo<FormRouteArgs>(name);
+}
+
+class FormRouteArgs {
+  const FormRouteArgs({
+    this.key,
+    required this.action,
+    required this.provider,
+  });
+
+  final Key? key;
+
+  final ActionItem action;
+
+  final ServiceProvider provider;
+
+  @override
+  String toString() {
+    return 'FormRouteArgs{key: $key, action: $action, provider: $provider}';
+  }
 }
 
 /// generated route for
 /// [ProviderListScreen]
-class ProviderListRoute extends PageRouteInfo<void> {
-  const ProviderListRoute({List<PageRouteInfo>? children})
-      : super(
+class ProviderListRoute extends PageRouteInfo<ProviderListRouteArgs> {
+  ProviderListRoute({
+    Key? key,
+    required Category category,
+    List<PageRouteInfo>? children,
+  }) : super(
           ProviderListRoute.name,
+          args: ProviderListRouteArgs(
+            key: key,
+            category: category,
+          ),
           initialChildren: children,
         );
 
   static const String name = 'ProviderListRoute';
 
-  static const PageInfo<void> page = PageInfo<void>(name);
+  static const PageInfo<ProviderListRouteArgs> page =
+      PageInfo<ProviderListRouteArgs>(name);
+}
+
+class ProviderListRouteArgs {
+  const ProviderListRouteArgs({
+    this.key,
+    required this.category,
+  });
+
+  final Key? key;
+
+  final Category category;
+
+  @override
+  String toString() {
+    return 'ProviderListRouteArgs{key: $key, category: $category}';
+  }
 }

@@ -39,14 +39,16 @@ dependencies:
   http: ^1.4.0
 
   # State Management
-  flutter_bloc: ^8.1.6
+  flutter_riverpod: ^2.6.1
+  flutter_hooks: ^0.20.5
+  hooks_riverpod: ^2.6.1
 
   # Code Generation
   freezed_annotation: ^2.4.4
   json_annotation: ^4.9.0
 
-  # Dependency Injection
-  get_it: ^7.7.0
+  # Equatable for model comparison
+  equatable: ^2.0.7
 
   # Local Storage
   hive: ^2.2.3
@@ -72,7 +74,7 @@ dev_dependencies:
 
   # Code Generation
   build_runner: ^2.4.12
-  freezed: ^2.5.7
+  freezed: ^2.5.2
   json_serializable: ^6.8.0
 
   # Auto Route

@@ -1,24 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'l10n/app_localizations.dart';
-import 'core/di/injection.dart';
-import 'core/services/local_storage_service.dart';
-import 'core/routing/app_router.dart';
-import 'features/sms_commands/logic/sms_commands_cubit.dart';
+import 'package:sms/l10n/app_localizations.dart';
+import 'package:sms/core/services/local_storage_service.dart';
+import 'package:sms/core/routing/app_router.dart';
+import 'package:sms/core/initializer/app_providers.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize dependency injection
-  await setupInjection();
-
   // Initialize local storage
-  final localStorage = getIt<LocalStorageService>();
+  final localStorage = LocalStorageService();
   await localStorage.initialize();
 
-  runApp(const MyApp());
+  runApp(
+    ProviderScope(
+      overrides: [
+        // Override with initialized storage instance
+        localStorageServiceProvider.overrideWithValue(localStorage),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -27,15 +31,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appRouter = AppRouter();
-    final cubit = getIt<SmsCommandsCubit>();
 
-    return BlocProvider<SmsCommandsCubit>.value(
-      value: cubit,
-      child: MaterialApp.router(
-        title: 'SMS Commands',
-        routerConfig: appRouter.config(),
+    return MaterialApp.router(
+      title: 'SMS Commands',
+      routerConfig: appRouter.config(),
 
-        // Localization
+      // Localization
         localizationsDelegates: [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
@@ -74,7 +75,7 @@ class MyApp extends StatelessWidget {
 
           cardTheme: CardThemeData(
             elevation: 3,
-            shadowColor: Colors.black.withOpacity(0.1),
+            shadowColor: Colors.black.withAlpha(26),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
@@ -83,7 +84,7 @@ class MyApp extends StatelessWidget {
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
               elevation: 3,
-              shadowColor: Colors.black.withOpacity(0.2),
+              shadowColor: Colors.black.withAlpha(51),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
@@ -135,7 +136,6 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-      ),
     );
   }
 }
