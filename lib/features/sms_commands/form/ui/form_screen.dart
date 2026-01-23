@@ -46,107 +46,103 @@ class FormScreen extends HookConsumerWidget {
       body: CustomScrollView(
         slivers: [
           // SMS Preview Section
-          if (formState.formValues.isNotEmpty)
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  child: XCard(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            colorScheme.primaryContainer,
-                            colorScheme.primaryContainer.withAlpha(128),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: XCard(
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        colorScheme.primaryContainer,
+                        colorScheme.primaryContainer.withAlpha(128),
+                      ],
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.sms,
+                              color: colorScheme.primary,
+                              size: 24,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              l10n.smsPreview,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: colorScheme.primary,
+                                  ),
+                            ),
                           ],
                         ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Column(
-                          crossAxisAlignment: .start,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.sms,
-                                  color: colorScheme.primary,
-                                  size: 24,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  l10n.smsPreview,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium
-                                      ?.copyWith(
-                                        fontWeight: .bold,
-                                        color: colorScheme.primary,
-                                      ),
-                                ),
-                              ],
+                        const SizedBox(height: 16),
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: colorScheme.surface,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: colorScheme.outline,
+                              width: 1,
                             ),
-                            const SizedBox(height: 16),
-                            Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: colorScheme.surface,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: colorScheme.outline,
-                                  width: 1,
-                                ),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: .start,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
                                 children: [
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.phone,
-                                        size: 16,
-                                        color: colorScheme.onSurfaceVariant,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        'To: ${action.smsNumber}',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodySmall
-                                            ?.copyWith(
-                                              color:
-                                                  colorScheme.onSurfaceVariant,
-                                              fontWeight: .w500,
-                                            ),
-                                      ),
-                                    ],
+                                  Icon(
+                                    Icons.phone,
+                                    size: 16,
+                                    color: colorScheme.onSurfaceVariant,
                                   ),
-                                  const SizedBox(height: 8),
+                                  const SizedBox(width: 8),
                                   Text(
-                                    formState.previewMessage,
+                                    'To: ${action.smsNumber}',
                                     style: Theme.of(context)
                                         .textTheme
-                                        .bodyMedium
+                                        .bodySmall
                                         ?.copyWith(
-                                          color: colorScheme.onSurface,
-                                          fontWeight: .w500,
+                                          color: colorScheme.onSurfaceVariant,
+                                          fontWeight: FontWeight.w500,
                                         ),
                                   ),
                                 ],
                               ),
-                            ),
-                          ],
+                              const SizedBox(height: 8),
+                              Text(
+                                formState.previewMessage,
+                                textDirection: TextDirection.ltr,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(
+                                      color: colorScheme.onSurface,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
                 ),
               ),
             ),
+          ),
           // Form Section
           SliverToBoxAdapter(
             child: Padding(
@@ -154,23 +150,6 @@ class FormScreen extends HookConsumerWidget {
               child: Column(
                 crossAxisAlignment: .start,
                 children: [
-                  if (formState.formValues.isEmpty) ...[
-                    Text(
-                      l10n.fillForm,
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: .bold,
-                            color: colorScheme.onSurface,
-                          ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      l10n.fillFormDescription,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                    ),
-                    const SizedBox(height: 24),
-                  ],
                   XCard(
                     child: Padding(
                       padding: const EdgeInsets.all(20),

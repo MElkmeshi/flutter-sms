@@ -22,7 +22,8 @@
       "Bash(/Users/melkmeshi/Sites/repo/flutter-sms/.fvm/flutter_sdk/bin/flutter analyze:*)",
       "Bash(.fvm/flutter_sdk/bin/flutter analyze:*)",
       "Bash(.fvm/flutter_sdk/bin/flutter devices:*)",
-      "Bash(.fvm/flutter_sdk/bin/flutter emulators:*)"
+      "Bash(.fvm/flutter_sdk/bin/flutter emulators:*)",
+      "Bash(.fvm/flutter_sdk/bin/flutter run:*)"
     ]
   }
 }

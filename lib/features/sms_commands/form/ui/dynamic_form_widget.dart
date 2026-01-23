@@ -128,6 +128,7 @@ class DynamicFormWidget extends HookConsumerWidget {
                   onSubmit();
                 }
               },
+              iconAlignment: IconAlignment.end,
               icon: const Icon(Icons.send),
               label: Text(
                 l10n.sendSms,
@@ -241,27 +242,16 @@ class DynamicFormWidget extends HookConsumerWidget {
         return TextFormField(
           controller: controllers[field.id],
           decoration: InputDecoration(
-            labelText: label,
             hintText: l10n.enterField(label),
             prefixIcon: Icon(
               _getFieldIcon(field.id),
               color: colorScheme.onSurfaceVariant,
             ),
-            suffixIcon: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.bookmark_border, size: 20, color: colorScheme.primary),
-                  onPressed: () => _showSavedValuesSheet(
-                    context, ref, field, label, controllers[field.id]!, formValues,
-                  ),
-                ),
-                if (formValues[field.id]?.isNotEmpty == true)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 12),
-                    child: Icon(Icons.check_circle, color: colorScheme.primary, size: 20),
-                  ),
-              ],
+            suffixIcon: IconButton(
+              icon: Icon(Icons.bookmark_border, size: 20, color: colorScheme.primary),
+              onPressed: () => _showSavedValuesSheet(
+                context, ref, field, label, controllers[field.id]!, formValues,
+              ),
             ),
           ),
           validator: (value) {
