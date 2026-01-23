@@ -49,7 +49,7 @@ class MyApp extends ConsumerWidget {
         .map((code) => Locale(code))
         .toList();
 
-    final defaultLocale = Locale(themeConfig.defaultLocale);
+    final currentLocale = Locale(ref.watch(localeProvider));
 
     return MaterialApp.router(
       title: 'SMS Commands',
@@ -63,7 +63,7 @@ class MyApp extends ConsumerWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: locales,
-      locale: defaultLocale,
+      locale: currentLocale,
 
       // Theme
       theme: _buildTheme(context, primaryColor),

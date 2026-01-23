@@ -23,7 +23,8 @@
       "Bash(.fvm/flutter_sdk/bin/flutter analyze:*)",
       "Bash(.fvm/flutter_sdk/bin/flutter devices:*)",
       "Bash(.fvm/flutter_sdk/bin/flutter emulators:*)",
-      "Bash(.fvm/flutter_sdk/bin/flutter run:*)"
+      "Bash(.fvm/flutter_sdk/bin/flutter run:*)",
+      "Bash(.fvm/flutter_sdk/bin/flutter build:*)"
     ]
   }
 }

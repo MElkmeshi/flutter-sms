@@ -75,11 +75,8 @@ class FormController extends FamilyNotifier<FormState, FormParams> {
   /// Send SMS with the current form values
   Future<bool> sendSms() async {
     try {
-      final uri = Uri(
-        scheme: 'sms',
-        path: state.action.smsNumber,
-        queryParameters: {'body': state.previewMessage},
-      );
+      final body = Uri.encodeComponent(state.previewMessage);
+      final uri = Uri.parse('sms:${state.action.smsNumber}?body=$body');
       return await launchUrl(uri);
     } catch (e) {
       return false;

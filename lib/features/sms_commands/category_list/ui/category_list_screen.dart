@@ -34,6 +34,16 @@ class CategoryListScreen extends HookConsumerWidget {
         ),
         centerTitle: true,
         actions: [
+          TextButton(
+            onPressed: () => ref.read(localeProvider.notifier).toggle(),
+            child: Text(
+              ref.watch(localeProvider) == 'ar' ? 'EN' : 'ع',
+              style: GoogleFonts.ibmPlexSans(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.info_outline),
             onPressed: () => _showAboutDialog(context, l10n),
