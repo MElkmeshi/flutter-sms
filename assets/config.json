@@ -17,6 +17,7 @@
                     "id": "nuran",
                     "name_en": "Nuran Bank",
                     "name_ar": "مصرف النوران",
+                    "image": "assets/images/providers/nuran.svg",
                     "description_en": "The SMS service keeps you updated on all account movements like deposits and withdrawals. It auto-subscribes upon account opening. You can request via SMS to 20002 and choose message language as follows.",
                     "description_ar": "خدمة الرسائل النصية تبقيك هده الخدمة على اطلاع دائم بكل حركات حسابك من ايداع وخصم. يتم الاشتراك تلقائياً عند فتح الحساب. يمكنك طلبها بإرسال رسالة إلى الرقم (20002) ويمكن اختيار لغة عرض الرسائل كالتالي.",
                     "actions": [
@@ -205,12 +206,58 @@
                             "name_en": "LYPAY Status",
                             "name_ar": "حالة حساب LYPAY",
                             "smsNumber": "20002",
-                            "template": "NUBLY {account}",
+                            "template": "NUBLY*{account}",
                             "fields": [
                                 {
                                     "id": "account",
                                     "label_en": "Account No.",
                                     "label_ar": "رقم الحساب",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "lypay_transfer",
+                            "name_en": "LYpay Transfer",
+                            "name_ar": "التحويل عبر LYpay",
+                            "description_en": "Transfer money to another LYpay account. You will receive a confirmation code via SMS.",
+                            "description_ar": "تحويل الأموال إلى حساب LYpay آخر. ستصلك رسالة تحتوي على رمز التأكيد.",
+                            "smsNumber": "20002",
+                            "template": "NUBLY*{account}*{iban}*{amount}",
+                            "fields": [
+                                {
+                                    "id": "account",
+                                    "label_en": "Your Account No.",
+                                    "label_ar": "رقم حسابك",
+                                    "type": "text"
+                                },
+                                {
+                                    "id": "iban",
+                                    "label_en": "Recipient IBAN",
+                                    "label_ar": "IBAN الخاص بالحساب المراد التحويل إليه",
+                                    "type": "text"
+                                },
+                                {
+                                    "id": "amount",
+                                    "label_en": "Amount",
+                                    "label_ar": "القيمة",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "lypay_confirm",
+                            "name_en": "Confirm LYpay Transfer",
+                            "name_ar": "تأكيد تحويل LYpay",
+                            "description_en": "Enter the confirmation code received after initiating a LYpay transfer.",
+                            "description_ar": "أدخل رمز التأكيد الذي وصلك بعد بدء التحويل عبر LYpay.",
+                            "smsNumber": "20002",
+                            "template": "NUBLY*{code}",
+                            "fields": [
+                                {
+                                    "id": "code",
+                                    "label_en": "Confirmation Code",
+                                    "label_ar": "رمز التأكيد",
                                     "type": "text"
                                 }
                             ]
@@ -256,6 +303,7 @@
                     "id": "jumhouria",
                     "name_en": "Jumhouria Bank",
                     "name_ar": "مصرف الجمهورية",
+                    "image": "assets/images/providers/jumhouria.svg",
                     "smsNumber": "16016",
                     "actions": [
                         {
@@ -553,6 +601,7 @@
                     "id": "jumhouria-efa",
                     "name_en": "Jumhouria Bank - E-fa Card",
                     "name_ar": "مصرف الجمهورية - بطاقة إيفاء",
+                    "image": "assets/images/providers/efa.png",
                     "description_en": "Manage your E-fa card by sending an SMS to 15051.",
                     "description_ar": "لإدارة بطاقة إيفاء الخاصة بك عبر إرسال رسالة نصية قصيرة إلى 15051.",
                     "actions": [
@@ -699,6 +748,7 @@
                     "id": "yaqeen",
                     "name_en": "Yaqeen Bank",
                     "name_ar": "مصرف اليقين",
+                    "image": "assets/images/providers/yaqeen.svg",
                     "description_en": "You can perform various operations with ease by sending a text message to 19919 (Libyana or Almadar Aljadeed) containing one of the following codes from left to right. [2]",
                     "description_ar": "يمكنكم إجراء العمليات المختلفة بكل سهولة ويسر عبر إرسال رسالة نصية إلى 19919 (ليبيانا أو المدار الجديد) تحتوي على أحد الأكواد التالية من اليسار إلى اليمين: [2]",
                     "actions": [
@@ -785,6 +835,7 @@
                     "id": "ncb",
                     "name_en": "National Commercial Bank",
                     "name_ar": "المصرف التجاري الوطني",
+                    "image": "assets/images/providers/ncb.svg",
                     "description_en": "The National Commercial Bank offers an SMS service for its customers to obtain all information/notifications related to their account transactions as they happen, inquire about account balances, last transactions, or transfer between personal accounts. To subscribe, you must visit your branch to fill out the form. The annual subscription fee is 24 LYD. Send an SMS to 19019 to get your bank account details.",
                     "description_ar": "يقدم المصرف التجاري الوطني خدمة الرسائل القصيرة SMS لعملائه الكرام وذلك للحصول على جميع المعلومات / الإشعارات المتعلقة بحركات حساباتهم فور حدوثها وللاستعلام عن أرصدة الحسابات وآخر الحركات التي تمت على الحساب او التحويل بين الحسابات الشخصية في المصرف. للاشتراك، يجب التوجه إلى فرعك لتعبئة النموذج. رسوم الاشتراك السنوي 24 ديناراً. أرسل رسالة نصية إلى الرقم 19019 للحصول على تفاصيل حسابك المصرفي. [2]",
                     "actions": [
@@ -941,8 +992,9 @@
                 },
                 {
                     "id": "assaray",
-                    "name_en": "Assaray Bank",
-                    "name_ar": "مصرف أتيب",
+                    "name_en": "Assaray Bank (ATIB)",
+                    "name_ar": "مصرف السراي (أتيب)",
+                    "image": "assets/images/providers/assaray.svg",
                     "description_en": "Banking services via SMS. Book your appointment to visit ATIB branches and avoid crowds and waiting! To take advantage of any of the following services, send a message to the ATIB number 19000 from left to right.",
                     "description_ar": "خدمات مصرفية عبر الرسائل النصية القصيرة. احجز موعدك لزيارة فروع أتيب، وتجنب الازدحام والانتظار! للاستفادة من أي خدمة من الخدمات التالية أرسل رسالة إلى رقم أتيب 19000 من اليسار إلى اليمين. [2]",
                     "actions": [
@@ -1781,6 +1833,609 @@
                     ],
                     "icon": "account_balance",
                     "color": "#00838F"
+                },
+                {
+                    "id": "nab",
+                    "name_en": "North Africa Bank",
+                    "name_ar": "مصرف شمال أفريقيا",
+                    "image": "assets/images/providers/nab.svg",
+                    "description_en": "SMS banking services. Send SMS to 16016 with your PIN and command code.",
+                    "description_ar": "خدمات مصرفية عبر الرسائل النصية. أرسل رسالة إلى 16016 مع الرقم السري ورمز الخدمة.",
+                    "actions": [
+                        {
+                            "id": "last_salary",
+                            "name_en": "Last Salary",
+                            "name_ar": "آخر راتب",
+                            "smsNumber": "16016",
+                            "template": "{pin}*1",
+                            "fields": [
+                                {
+                                    "id": "pin",
+                                    "label_en": "PIN",
+                                    "label_ar": "الرقم السري",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "mini_statement",
+                            "name_en": "Mini Statement (Last 3)",
+                            "name_ar": "كشف مختصر (آخر 3 حركات)",
+                            "smsNumber": "16016",
+                            "template": "{pin}*2",
+                            "fields": [
+                                {
+                                    "id": "pin",
+                                    "label_en": "PIN",
+                                    "label_ar": "الرقم السري",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "current_balance",
+                            "name_en": "Current Balance",
+                            "name_ar": "الرصيد الحالي",
+                            "smsNumber": "16016",
+                            "template": "{pin}*3",
+                            "fields": [
+                                {
+                                    "id": "pin",
+                                    "label_en": "PIN",
+                                    "label_ar": "الرقم السري",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "last_3_debits",
+                            "name_en": "Last 3 Debits",
+                            "name_ar": "آخر 3 مسحوبات",
+                            "smsNumber": "16016",
+                            "template": "{pin}*5",
+                            "fields": [
+                                {
+                                    "id": "pin",
+                                    "label_en": "PIN",
+                                    "label_ar": "الرقم السري",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "last_3_credits",
+                            "name_en": "Last 3 Credits",
+                            "name_ar": "آخر 3 إيداعات",
+                            "smsNumber": "16016",
+                            "template": "{pin}*6",
+                            "fields": [
+                                {
+                                    "id": "pin",
+                                    "label_en": "PIN",
+                                    "label_ar": "الرقم السري",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "sell_rates",
+                            "name_en": "Currency Sell Rates",
+                            "name_ar": "أسعار بيع العملات",
+                            "smsNumber": "16016",
+                            "template": "{pin}*7",
+                            "fields": [
+                                {
+                                    "id": "pin",
+                                    "label_en": "PIN",
+                                    "label_ar": "الرقم السري",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "buy_rates",
+                            "name_en": "Currency Buy Rates",
+                            "name_ar": "أسعار شراء العملات",
+                            "smsNumber": "16016",
+                            "template": "{pin}*8",
+                            "fields": [
+                                {
+                                    "id": "pin",
+                                    "label_en": "PIN",
+                                    "label_ar": "الرقم السري",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "statement_excl_topups",
+                            "name_en": "Statement (Excl. Card Top-ups)",
+                            "name_ar": "كشف حساب (بدون شحن الكروت)",
+                            "smsNumber": "16016",
+                            "template": "{pin}*9",
+                            "fields": [
+                                {
+                                    "id": "pin",
+                                    "label_en": "PIN",
+                                    "label_ar": "الرقم السري",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "change_pin",
+                            "name_en": "Change PIN",
+                            "name_ar": "تغيير الرقم السري",
+                            "smsNumber": "16016",
+                            "template": "{old_pin}*12*{new_pin}",
+                            "fields": [
+                                {
+                                    "id": "old_pin",
+                                    "label_en": "Old PIN",
+                                    "label_ar": "الرقم السري القديم",
+                                    "type": "text"
+                                },
+                                {
+                                    "id": "new_pin",
+                                    "label_en": "New PIN",
+                                    "label_ar": "الرقم السري الجديد",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "checkbook_request",
+                            "name_en": "Checkbook Request",
+                            "name_ar": "طلب دفتر شيكات",
+                            "smsNumber": "16016",
+                            "template": "{pin}*21",
+                            "fields": [
+                                {
+                                    "id": "pin",
+                                    "label_en": "PIN",
+                                    "label_ar": "الرقم السري",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "email_statement",
+                            "name_en": "Email Statement",
+                            "name_ar": "إرسال كشف حساب بالإيميل",
+                            "smsNumber": "16016",
+                            "template": "{pin}*22*{from}*{to}",
+                            "fields": [
+                                {
+                                    "id": "pin",
+                                    "label_en": "PIN",
+                                    "label_ar": "الرقم السري",
+                                    "type": "text"
+                                },
+                                {
+                                    "id": "from",
+                                    "label_en": "From Date",
+                                    "label_ar": "من تاريخ",
+                                    "type": "text"
+                                },
+                                {
+                                    "id": "to",
+                                    "label_en": "To Date",
+                                    "label_ar": "إلى تاريخ",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "buy_madar",
+                            "name_en": "Buy Madar Recharge",
+                            "name_ar": "شراء رصيد المدار",
+                            "smsNumber": "16016",
+                            "template": "{pin}*31*{amount}",
+                            "fields": [
+                                {
+                                    "id": "pin",
+                                    "label_en": "PIN",
+                                    "label_ar": "الرقم السري",
+                                    "type": "text"
+                                },
+                                {
+                                    "id": "amount",
+                                    "label_en": "Amount",
+                                    "label_ar": "القيمة",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "buy_libyana",
+                            "name_en": "Buy Libyana Recharge",
+                            "name_ar": "شراء رصيد ليبيانا",
+                            "smsNumber": "16016",
+                            "template": "{pin}*32*{amount}",
+                            "fields": [
+                                {
+                                    "id": "pin",
+                                    "label_en": "PIN",
+                                    "label_ar": "الرقم السري",
+                                    "type": "text"
+                                },
+                                {
+                                    "id": "amount",
+                                    "label_en": "Amount",
+                                    "label_ar": "القيمة",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "buy_internet",
+                            "name_en": "Buy Internet Recharge",
+                            "name_ar": "شراء رصيد إنترنت",
+                            "smsNumber": "16016",
+                            "template": "{pin}*33*{amount}",
+                            "fields": [
+                                {
+                                    "id": "pin",
+                                    "label_en": "PIN",
+                                    "label_ar": "الرقم السري",
+                                    "type": "text"
+                                },
+                                {
+                                    "id": "amount",
+                                    "label_en": "Amount",
+                                    "label_ar": "القيمة",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "buy_landline",
+                            "name_en": "Buy Landline Recharge",
+                            "name_ar": "شراء رصيد هاتف أرضي",
+                            "smsNumber": "16016",
+                            "template": "{pin}*34*{amount}",
+                            "fields": [
+                                {
+                                    "id": "pin",
+                                    "label_en": "PIN",
+                                    "label_ar": "الرقم السري",
+                                    "type": "text"
+                                },
+                                {
+                                    "id": "amount",
+                                    "label_en": "Amount",
+                                    "label_ar": "القيمة",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    ],
+                    "icon": "account_balance",
+                    "color": "#1565C0"
+                },
+                {
+                    "id": "bcd",
+                    "name_en": "Bank of Commerce & Development",
+                    "name_ar": "مصرف التجارة والتنمية",
+                    "image": "assets/images/providers/bcd.svg",
+                    "description_en": "SMS banking services. Send SMS to 18787 with your PIN and command code.",
+                    "description_ar": "خدمات مصرفية عبر الرسائل النصية. أرسل رسالة إلى 18787 مع الرقم السري ورمز الخدمة.",
+                    "actions": [
+                        {
+                            "id": "balance_inquiry",
+                            "name_en": "Balance Inquiry",
+                            "name_ar": "الاستعلام عن الرصيد",
+                            "smsNumber": "18787",
+                            "template": "01{pin}",
+                            "fields": [
+                                {
+                                    "id": "pin",
+                                    "label_en": "PIN",
+                                    "label_ar": "الرقم السري",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "buy_madar",
+                            "name_en": "Buy Madar Recharge",
+                            "name_ar": "شراء رصيد المدار",
+                            "smsNumber": "18787",
+                            "template": "30{pin}{category}",
+                            "fields": [
+                                {
+                                    "id": "pin",
+                                    "label_en": "PIN",
+                                    "label_ar": "الرقم السري",
+                                    "type": "text"
+                                },
+                                {
+                                    "id": "category",
+                                    "label_en": "Category/Amount",
+                                    "label_ar": "الفئة/القيمة",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "buy_libyana",
+                            "name_en": "Buy Libyana Recharge",
+                            "name_ar": "شراء رصيد ليبيانا",
+                            "smsNumber": "18787",
+                            "template": "32{pin}{category}",
+                            "fields": [
+                                {
+                                    "id": "pin",
+                                    "label_en": "PIN",
+                                    "label_ar": "الرقم السري",
+                                    "type": "text"
+                                },
+                                {
+                                    "id": "category",
+                                    "label_en": "Category/Amount",
+                                    "label_ar": "الفئة/القيمة",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "buy_ltt",
+                            "name_en": "Buy LTT Recharge",
+                            "name_ar": "شراء رصيد LTT",
+                            "smsNumber": "18787",
+                            "template": "34{pin}{category}",
+                            "fields": [
+                                {
+                                    "id": "pin",
+                                    "label_en": "PIN",
+                                    "label_ar": "الرقم السري",
+                                    "type": "text"
+                                },
+                                {
+                                    "id": "category",
+                                    "label_en": "Category/Amount",
+                                    "label_ar": "الفئة/القيمة",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    ],
+                    "icon": "account_balance",
+                    "color": "#6A1B9A"
+                },
+                {
+                    "id": "aman",
+                    "name_en": "Aman Bank",
+                    "name_ar": "مصرف الأمان",
+                    "image": "assets/images/providers/aman.svg",
+                    "description_en": "SMS banking services. Send SMS to 14000 for AmanPay merchant payments.",
+                    "description_ar": "خدمات مصرفية عبر الرسائل النصية. أرسل رسالة إلى 14000 للدفع عبر AmanPay.",
+                    "actions": [
+                        {
+                            "id": "merchant_payment",
+                            "name_en": "Merchant Payment (AmanPay)",
+                            "name_ar": "الدفع للتاجر (AmanPay)",
+                            "smsNumber": "14000",
+                            "template": "{pin}*33*{merchant_account}*{amount}",
+                            "fields": [
+                                {
+                                    "id": "pin",
+                                    "label_en": "PIN",
+                                    "label_ar": "الرقم السري",
+                                    "type": "text"
+                                },
+                                {
+                                    "id": "merchant_account",
+                                    "label_en": "Merchant Account",
+                                    "label_ar": "حساب التاجر",
+                                    "type": "text"
+                                },
+                                {
+                                    "id": "amount",
+                                    "label_en": "Amount",
+                                    "label_ar": "المبلغ",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    ],
+                    "icon": "account_balance",
+                    "color": "#00695C"
+                },
+                {
+                    "id": "wahda",
+                    "name_en": "Wahda Bank",
+                    "name_ar": "مصرف الوحدة",
+                    "image": "assets/images/providers/wahda.svg",
+                    "description_en": "SMS banking services. Send SMS to 10110 with your PIN and command code.",
+                    "description_ar": "خدمات مصرفية عبر الرسائل النصية. أرسل رسالة إلى 10110 مع الرقم السري ورمز الخدمة.",
+                    "actions": [
+                        {
+                            "id": "last_salary",
+                            "name_en": "Last Salary",
+                            "name_ar": "آخر راتب",
+                            "smsNumber": "10110",
+                            "template": "{pin}*1",
+                            "fields": [
+                                {
+                                    "id": "pin",
+                                    "label_en": "PIN",
+                                    "label_ar": "الرقم السري",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "mini_statement",
+                            "name_en": "Mini Statement",
+                            "name_ar": "كشف مختصر",
+                            "smsNumber": "10110",
+                            "template": "{pin}*2",
+                            "fields": [
+                                {
+                                    "id": "pin",
+                                    "label_en": "PIN",
+                                    "label_ar": "الرقم السري",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "current_balance",
+                            "name_en": "Current Balance",
+                            "name_ar": "الرصيد الحالي",
+                            "smsNumber": "10110",
+                            "template": "{pin}*3",
+                            "fields": [
+                                {
+                                    "id": "pin",
+                                    "label_en": "PIN",
+                                    "label_ar": "الرقم السري",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "last_3_debits",
+                            "name_en": "Last 3 Debits",
+                            "name_ar": "آخر 3 مسحوبات",
+                            "smsNumber": "10110",
+                            "template": "{pin}*5",
+                            "fields": [
+                                {
+                                    "id": "pin",
+                                    "label_en": "PIN",
+                                    "label_ar": "الرقم السري",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "last_3_credits",
+                            "name_en": "Last 3 Credits",
+                            "name_ar": "آخر 3 إيداعات",
+                            "smsNumber": "10110",
+                            "template": "{pin}*6",
+                            "fields": [
+                                {
+                                    "id": "pin",
+                                    "label_en": "PIN",
+                                    "label_ar": "الرقم السري",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "sell_rates",
+                            "name_en": "Currency Sell Rates",
+                            "name_ar": "أسعار بيع العملات",
+                            "smsNumber": "10110",
+                            "template": "{pin}*7",
+                            "fields": [
+                                {
+                                    "id": "pin",
+                                    "label_en": "PIN",
+                                    "label_ar": "الرقم السري",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "buy_rates",
+                            "name_en": "Currency Buy Rates",
+                            "name_ar": "أسعار شراء العملات",
+                            "smsNumber": "10110",
+                            "template": "{pin}*8",
+                            "fields": [
+                                {
+                                    "id": "pin",
+                                    "label_en": "PIN",
+                                    "label_ar": "الرقم السري",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "statement_excl_topups",
+                            "name_en": "Mini Statement (Excl. Card Top-ups)",
+                            "name_ar": "كشف مختصر (بدون شحن الكروت)",
+                            "smsNumber": "10110",
+                            "template": "{pin}*9",
+                            "fields": [
+                                {
+                                    "id": "pin",
+                                    "label_en": "PIN",
+                                    "label_ar": "الرقم السري",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "change_pin",
+                            "name_en": "Change PIN",
+                            "name_ar": "تغيير الرقم السري",
+                            "smsNumber": "10110",
+                            "template": "{old_pin}*12*{new_pin}",
+                            "fields": [
+                                {
+                                    "id": "old_pin",
+                                    "label_en": "Old PIN",
+                                    "label_ar": "الرقم السري القديم",
+                                    "type": "text"
+                                },
+                                {
+                                    "id": "new_pin",
+                                    "label_en": "New PIN",
+                                    "label_ar": "الرقم السري الجديد",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "buy_madar",
+                            "name_en": "Buy Madar Recharge",
+                            "name_ar": "شراء رصيد المدار",
+                            "smsNumber": "10110",
+                            "template": "{pin}*31*{amount}",
+                            "fields": [
+                                {
+                                    "id": "pin",
+                                    "label_en": "PIN",
+                                    "label_ar": "الرقم السري",
+                                    "type": "text"
+                                },
+                                {
+                                    "id": "amount",
+                                    "label_en": "Amount",
+                                    "label_ar": "القيمة",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "buy_libyana",
+                            "name_en": "Buy Libyana Recharge",
+                            "name_ar": "شراء رصيد ليبيانا",
+                            "smsNumber": "10110",
+                            "template": "{pin}*32*{amount}",
+                            "fields": [
+                                {
+                                    "id": "pin",
+                                    "label_en": "PIN",
+                                    "label_ar": "الرقم السري",
+                                    "type": "text"
+                                },
+                                {
+                                    "id": "amount",
+                                    "label_en": "Amount",
+                                    "label_ar": "القيمة",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    ],
+                    "icon": "account_balance",
+                    "color": "#E65100"
                 }
             ],
             "icon": "account_balance",
@@ -1803,6 +2458,7 @@
                     "id": "ltt",
                     "name_en": "Libya Telecom & Technology",
                     "name_ar": "ليبيا للاتصالات والتقنية",
+                    "image": "assets/images/providers/ltt.png",
                     "description_en": "SMS service to manage your LTT 4G account. Send an SMS to 11611 with the following formats.",
                     "description_ar": "خدمة الرسائل النصية لإدارة حساب 4G الخاص بك من شركة ليبيا للاتصالات والتقنية. أرسل رسالة نصية إلى 11611 بالتنسيقات التالية.",
                     "actions": [
