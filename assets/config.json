@@ -2720,6 +2720,75 @@
                     ],
                     "icon": "cell_tower",
                     "color": "#E65100"
+                },
+                {
+                    "id": "libyana",
+                    "name_en": "Libyana",
+                    "name_ar": "ليبيانا",
+                    "description_en": "Electricity payment service via USSD. Subscribe to electricity packages through General Electricity Company of Libya.",
+                    "description_ar": "خدمة دفع الكهرباء عبر USSD. اشترك في باقات الكهرباء من خلال الشركة العامة للكهرباء ليبيا.",
+                    "actions": [
+                        {
+                            "id": "electricity_package",
+                            "name_en": "Subscribe to Electricity Package",
+                            "name_ar": "الاشتراك في باقة الكهرباء",
+                            "type": "ussd",
+                            "ussdCode": "*200*{meter_id}*{package}#",
+                            "fields": [
+                                {
+                                    "id": "meter_id",
+                                    "label_en": "Meter ID",
+                                    "label_ar": "رقم العداد",
+                                    "type": "text"
+                                },
+                                {
+                                    "id": "package",
+                                    "label_en": "Package",
+                                    "label_ar": "الباقة",
+                                    "type": "dropdown",
+                                    "options": [
+                                        {
+                                            "label_en": "5 Units - 7 LYD",
+                                            "label_ar": "5 وحدات - 7 د.ل",
+                                            "value": "1"
+                                        },
+                                        {
+                                            "label_en": "10 Units - 13 LYD",
+                                            "label_ar": "10 وحدات - 13 د.ل",
+                                            "value": "2"
+                                        },
+                                        {
+                                            "label_en": "15 Units - 18 LYD",
+                                            "label_ar": "15 وحدات - 18 د.ل",
+                                            "value": "3"
+                                        },
+                                        {
+                                            "label_en": "20 Units - 23 LYD",
+                                            "label_ar": "20 وحدات - 23 د.ل",
+                                            "value": "4"
+                                        },
+                                        {
+                                            "label_en": "30 Units - 33 LYD",
+                                            "label_ar": "30 وحدات - 33 د.ل",
+                                            "value": "5"
+                                        },
+                                        {
+                                            "label_en": "35 Units - 38 LYD",
+                                            "label_ar": "35 وحدات - 38 د.ل",
+                                            "value": "6"
+                                        },
+                                        {
+                                            "label_en": "40 Units - 43 LYD",
+                                            "label_ar": "40 وحدات - 43 د.ل",
+                                            "value": "7"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "icon": "phone_android",
+                    "color": "#4CAF50"
                 }
             ],
             "icon": "cell_tower",

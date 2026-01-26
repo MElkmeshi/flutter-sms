@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sms/l10n/app_localizations.dart';
 import 'package:sms/domain/model/service_provider.dart';
 import 'package:sms/core/utils/icon_mapper.dart';
@@ -20,10 +20,10 @@ class ProviderListItem extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final name = isArabic ? provider.nameAr : provider.nameEn;
-    final description =
-        isArabic ? provider.descriptionAr : provider.descriptionEn;
-    final icon =
-        IconMapper.fromString(provider.icon, fallback: Icons.business);
+    final description = isArabic
+        ? provider.descriptionAr
+        : provider.descriptionEn;
+    final icon = IconMapper.fromString(provider.icon, fallback: Icons.business);
     final color = IconMapper.colorFromHex(
       provider.color,
       fallback: colorScheme.primary,
@@ -32,9 +32,7 @@ class ProviderListItem extends StatelessWidget {
     return Card(
       elevation: 0,
       color: colorScheme.surfaceContainerLow,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
@@ -42,15 +40,8 @@ class ProviderListItem extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           child: Row(
             children: [
-              // Icon
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: color.withAlpha(30),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(icon, color: color, size: 24),
-              ),
+              // Image or Icon
+              _buildProviderImage(provider.image, icon, color),
               const SizedBox(width: 14),
 
               // Name, description & action count
@@ -60,7 +51,8 @@ class ProviderListItem extends StatelessWidget {
                   children: [
                     Text(
                       name,
-                      style: GoogleFonts.ibmPlexSans(
+                      style: _getTextStyle(
+                        isArabic: isArabic,
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                         color: colorScheme.onSurface,
@@ -74,7 +66,8 @@ class ProviderListItem extends StatelessWidget {
                         description,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.ibmPlexSans(
+                        style: _getTextStyle(
+                          isArabic: isArabic,
                           fontSize: 12,
                           color: colorScheme.onSurfaceVariant,
                         ),
@@ -83,7 +76,8 @@ class ProviderListItem extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       '${provider.actions.length} ${l10n.actions}',
-                      style: GoogleFonts.ibmPlexSans(
+                      style: _getTextStyle(
+                        isArabic: isArabic,
                         fontSize: 12,
                         color: colorScheme.onSurfaceVariant,
                       ),
@@ -102,6 +96,100 @@ class ProviderListItem extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildProviderImage(String? image, IconData icon, Color color) {
+    const double size = 44;
+    const double iconSize = 24;
+
+    if (image != null && image.isNotEmpty) {
+      final isSvg = image.toLowerCase().endsWith('.svg');
+
+      return Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.white,
+          border: Border.all(color: Colors.grey.shade200, width: 1),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Padding(
+          padding: const EdgeInsets.all(4),
+          child: _buildImageWidget(image, isSvg, icon, color, iconSize),
+        ),
+      );
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: color.withAlpha(30),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Icon(icon, color: color, size: iconSize),
+    );
+  }
+
+  Widget _buildImageWidget(
+    String image,
+    bool isSvg,
+    IconData icon,
+    Color color,
+    double iconSize,
+  ) {
+    if (image.startsWith('http')) {
+      if (isSvg) {
+        return SvgPicture.network(
+          image,
+          fit: BoxFit.contain,
+          placeholderBuilder: (context) =>
+              _buildIconFallback(icon, color, iconSize),
+        );
+      }
+      return Image.network(
+        image,
+        fit: BoxFit.contain,
+        errorBuilder: (context, error, stackTrace) =>
+            _buildIconFallback(icon, color, iconSize),
+      );
+    }
+
+    if (isSvg) {
+      return SvgPicture.asset(
+        image,
+        fit: BoxFit.contain,
+        placeholderBuilder: (context) =>
+            _buildIconFallback(icon, color, iconSize),
+      );
+    }
+
+    return Image.asset(
+      image,
+      fit: BoxFit.contain,
+      errorBuilder: (context, error, stackTrace) =>
+          _buildIconFallback(icon, color, iconSize),
+    );
+  }
+
+  Widget _buildIconFallback(IconData icon, Color color, double size) {
+    return Center(
+      child: Icon(icon, color: color, size: size),
+    );
+  }
+
+  TextStyle _getTextStyle({
+    required bool isArabic,
+    required double fontSize,
+    FontWeight? fontWeight,
+    Color? color,
+  }) {
+    return TextStyle(
+      fontFamily: 'IBMPlexSansArabic',
+      fontSize: fontSize,
+      fontWeight: fontWeight,
+      color: color,
     );
   }
 }

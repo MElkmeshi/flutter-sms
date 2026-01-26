@@ -14,7 +14,6 @@ class ActionListItem extends StatelessWidget {
 
     return ListTile(
       title: Text(name),
-      subtitle: Text('SMS to: ${action.smsNumber}'),
       trailing: const Icon(Icons.arrow_forward_ios),
       onTap: onTap,
     );

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:sms/core/services/local_storage_service.dart';
@@ -24,6 +25,12 @@ class ConfigService {
   }
 
   Future<AppConfig> fetchAppConfig() async {
+    // In debug mode, always use local assets only
+    if (kDebugMode) {
+      final jsonString = await rootBundle.loadString('assets/config.json');
+      return _parseAppConfig(jsonString);
+    }
+
     // 1. Try remote fetch
     try {
       final url = getConfigUrl();

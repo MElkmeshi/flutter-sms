@@ -125,4 +125,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deleteSavedValue => 'Delete saved value?';
+
+  @override
+  String get dialUssd => 'Dial USSD';
+
+  @override
+  String get ussdPreview => 'USSD Preview';
+
+  @override
+  String get ussdDialerOpenedSuccess => 'USSD dialer opened successfully!';
+
+  @override
+  String get ussdDialerFailed => 'Failed to open USSD dialer';
 }

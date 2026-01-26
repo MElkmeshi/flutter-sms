@@ -24,7 +24,19 @@
       "Bash(.fvm/flutter_sdk/bin/flutter devices:*)",
       "Bash(.fvm/flutter_sdk/bin/flutter emulators:*)",
       "Bash(.fvm/flutter_sdk/bin/flutter run:*)",
-      "Bash(.fvm/flutter_sdk/bin/flutter build:*)"
+      "Bash(.fvm/flutter_sdk/bin/flutter build:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(flutter pub add:*)",
+      "Bash(svgo:*)",
+      "Bash(npm install:*)",
+      "Bash(svgo-viewbox:*)",
+      "Bash(npx svgo-viewbox:*)",
+      "Bash(pip3 install:*)",
+      "Bash(scour:*)",
+      "Bash(pip install:*)",
+      "Bash(done)",
+      "Bash(flutter gen-l10n:*)",
+      "Bash(flutter build:*)"
     ]
   }
 }

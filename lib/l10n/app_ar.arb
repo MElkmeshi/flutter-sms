@@ -53,5 +53,9 @@
   "valueName": "الاسم",
   "valueNameHint": "مثال: حسابي",
   "valueNameRequired": "الاسم مطلوب",
-  "deleteSavedValue": "حذف القيمة المحفوظة؟"
+  "deleteSavedValue": "حذف القيمة المحفوظة؟",
+  "dialUssd": "طلب USSD",
+  "ussdPreview": "معاينة كود USSD",
+  "ussdDialerOpenedSuccess": "تم فتح طالب USSD بنجاح!",
+  "ussdDialerFailed": "فشل في فتح طالب USSD"
 }

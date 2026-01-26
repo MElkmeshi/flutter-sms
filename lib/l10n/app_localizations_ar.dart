@@ -125,4 +125,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get deleteSavedValue => 'حذف القيمة المحفوظة؟';
+
+  @override
+  String get dialUssd => 'طلب USSD';
+
+  @override
+  String get ussdPreview => 'معاينة كود USSD';
+
+  @override
+  String get ussdDialerOpenedSuccess => 'تم فتح طالب USSD بنجاح!';
+
+  @override
+  String get ussdDialerFailed => 'فشل في فتح طالب USSD';
 }

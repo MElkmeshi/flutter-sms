@@ -37,11 +37,16 @@ class FormController extends FamilyNotifier<FormState, FormParams> {
     final localStorage = ref.watch(localStorageServiceProvider);
     final savedValues = _loadProviderFormValues(localStorage, arg.provider.id);
 
+    // Use USSD code for USSD actions, otherwise use SMS template
+    final template = arg.action.type == ActionType.ussd
+        ? arg.action.ussdCode ?? ''
+        : arg.action.template ?? '';
+
     return FormState(
       action: arg.action,
       provider: arg.provider,
       formValues: savedValues,
-      previewMessage: _generatePreview(arg.action.template, savedValues),
+      previewMessage: _generatePreview(template, savedValues),
     );
   }
 
@@ -54,18 +59,28 @@ class FormController extends FamilyNotifier<FormState, FormParams> {
     final localStorage = ref.read(localStorageServiceProvider);
     _saveProviderFormValues(localStorage, state.provider.id, updatedValues);
 
+    // Use USSD code for USSD actions, otherwise use SMS template
+    final template = state.action.type == ActionType.ussd
+        ? state.action.ussdCode ?? ''
+        : state.action.template ?? '';
+
     // Update state with new preview
     state = state.copyWith(
       formValues: updatedValues,
-      previewMessage: _generatePreview(state.action.template, updatedValues),
+      previewMessage: _generatePreview(template, updatedValues),
     );
   }
 
   /// Clear all form values for current provider
   void clearForm() {
+    // Use USSD code for USSD actions, otherwise use SMS template
+    final template = state.action.type == ActionType.ussd
+        ? state.action.ussdCode ?? ''
+        : state.action.template ?? '';
+
     state = state.copyWith(
       formValues: const {},
-      previewMessage: state.action.template,
+      previewMessage: template,
     );
 
     final localStorage = ref.read(localStorageServiceProvider);
@@ -77,6 +92,18 @@ class FormController extends FamilyNotifier<FormState, FormParams> {
     try {
       final body = Uri.encodeComponent(state.previewMessage);
       final uri = Uri.parse('sms:${state.action.smsNumber}?body=$body');
+      return await launchUrl(uri);
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /// Dial USSD code with the current form values
+  Future<bool> dialUssd() async {
+    try {
+      // Encode # as %23 for USSD codes
+      final ussdCode = state.previewMessage.replaceAll('#', '%23');
+      final uri = Uri.parse('tel:$ussdCode');
       return await launchUrl(uri);
     } catch (e) {
       return false;

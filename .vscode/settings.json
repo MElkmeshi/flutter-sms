@@ -4,5 +4,6 @@
     "titleBar.activeBackground": "#49400A",
     "titleBar.activeForeground": "#FDFBEE"
   },
-  "dart.flutterSdkPath": ".fvm/versions/3.38.7"
+  "dart.flutterSdkPath": ".fvm/versions/3.38.7",
+  "cmake.sourceDirectory": "/Users/melkmeshi/Sites/repo/flutter-sms/linux"
 }

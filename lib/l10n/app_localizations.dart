@@ -322,6 +322,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delete saved value?'**
   String get deleteSavedValue;
+
+  /// No description provided for @dialUssd.
+  ///
+  /// In en, this message translates to:
+  /// **'Dial USSD'**
+  String get dialUssd;
+
+  /// No description provided for @ussdPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'USSD Preview'**
+  String get ussdPreview;
+
+  /// No description provided for @ussdDialerOpenedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'USSD dialer opened successfully!'**
+  String get ussdDialerOpenedSuccess;
+
+  /// No description provided for @ussdDialerFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to open USSD dialer'**
+  String get ussdDialerFailed;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

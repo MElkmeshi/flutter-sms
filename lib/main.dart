@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -11,6 +12,11 @@ import 'package:sms/domain/model/app_config.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // In debug mode, disable Google Fonts network fetching (use local assets only)
+  if (kDebugMode) {
+    GoogleFonts.config.allowRuntimeFetching = false;
+  }
 
   // Initialize local storage
   final localStorage = LocalStorageService();
@@ -71,27 +77,26 @@ class MyApp extends ConsumerWidget {
   }
 
   ThemeData _buildTheme(BuildContext context, Color primaryColor) {
+    const fontFamily = 'IBMPlexSansArabic';
+
     return ThemeData(
       useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
         seedColor: primaryColor,
-        brightness: .light,
+        brightness: Brightness.light,
       ),
 
-      textTheme: GoogleFonts.ibmPlexSansTextTheme(
-        Theme.of(context).textTheme,
-      ),
-
-      fontFamily: 'IBM Plex Sans Arabic',
+      fontFamily: fontFamily,
 
       appBarTheme: AppBarTheme(
         elevation: 0,
         centerTitle: true,
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.black87,
-        titleTextStyle: GoogleFonts.ibmPlexSans(
+        titleTextStyle: const TextStyle(
+          fontFamily: fontFamily,
           fontSize: 20,
-          fontWeight: .w600,
+          fontWeight: FontWeight.w600,
           color: Colors.black87,
         ),
       ),
@@ -112,9 +117,10 @@ class MyApp extends ConsumerWidget {
             borderRadius: BorderRadius.circular(16),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-          textStyle: GoogleFonts.ibmPlexSans(
+          textStyle: const TextStyle(
+            fontFamily: fontFamily,
             fontSize: 16,
-            fontWeight: .w600,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),
@@ -138,20 +144,22 @@ class MyApp extends ConsumerWidget {
           horizontal: 20,
           vertical: 16,
         ),
-        labelStyle: GoogleFonts.ibmPlexSans(
+        labelStyle: const TextStyle(
+          fontFamily: fontFamily,
           fontSize: 14,
-          fontWeight: .w500,
+          fontWeight: FontWeight.w500,
         ),
       ),
 
       snackBarTheme: SnackBarThemeData(
-        behavior: .floating,
+        behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        contentTextStyle: GoogleFonts.ibmPlexSans(
+        contentTextStyle: const TextStyle(
+          fontFamily: fontFamily,
           fontSize: 14,
-          fontWeight: .w500,
+          fontWeight: FontWeight.w500,
         ),
       ),
     );

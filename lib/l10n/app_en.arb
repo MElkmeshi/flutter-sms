@@ -53,5 +53,9 @@
   "valueName": "Name",
   "valueNameHint": "e.g. My Account",
   "valueNameRequired": "Name is required",
-  "deleteSavedValue": "Delete saved value?"
+  "deleteSavedValue": "Delete saved value?",
+  "dialUssd": "Dial USSD",
+  "ussdPreview": "USSD Preview",
+  "ussdDialerOpenedSuccess": "USSD dialer opened successfully!",
+  "ussdDialerFailed": "Failed to open USSD dialer"
 }

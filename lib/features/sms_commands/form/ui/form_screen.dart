@@ -45,7 +45,7 @@ class FormScreen extends HookConsumerWidget {
       ),
       body: CustomScrollView(
         slivers: [
-          // SMS Preview Section
+          // Preview Section (SMS or USSD)
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -70,13 +70,13 @@ class FormScreen extends HookConsumerWidget {
                         Row(
                           children: [
                             Icon(
-                              Icons.sms,
+                              action.type == ActionType.ussd ? Icons.phone : Icons.sms,
                               color: colorScheme.primary,
                               size: 24,
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              l10n.smsPreview,
+                              action.type == ActionType.ussd ? l10n.ussdPreview : l10n.smsPreview,
                               style: Theme.of(context)
                                   .textTheme
                                   .titleMedium
@@ -101,27 +101,29 @@ class FormScreen extends HookConsumerWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.phone,
-                                    size: 16,
-                                    color: colorScheme.onSurfaceVariant,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'To: ${action.smsNumber}',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodySmall
-                                        ?.copyWith(
-                                          color: colorScheme.onSurfaceVariant,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
+                              if (action.type != ActionType.ussd) ...[
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.phone,
+                                      size: 16,
+                                      color: colorScheme.onSurfaceVariant,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'To: ${action.smsNumber}',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.copyWith(
+                                            color: colorScheme.onSurfaceVariant,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                              ],
                               Text(
                                 formState.previewMessage,
                                 textDirection: TextDirection.ltr,
@@ -156,11 +158,19 @@ class FormScreen extends HookConsumerWidget {
                       child: DynamicFormWidget(
                         fields: action.fields,
                         formParams: formParams,
+                        actionType: action.type,
                         onSubmit: () async {
-                          // Send SMS
-                          final success = await ref
-                              .read(FormController.provider(formParams).notifier)
-                              .sendSms();
+                          // Send SMS or dial USSD based on action type
+                          final bool success;
+                          if (action.type == ActionType.ussd) {
+                            success = await ref
+                                .read(FormController.provider(formParams).notifier)
+                                .dialUssd();
+                          } else {
+                            success = await ref
+                                .read(FormController.provider(formParams).notifier)
+                                .sendSms();
+                          }
 
                           if (context.mounted) {
                             if (success) {
@@ -173,7 +183,9 @@ class FormScreen extends HookConsumerWidget {
                                         color: Colors.white,
                                       ),
                                       const SizedBox(width: 8),
-                                      Text(l10n.smsAppOpenedSuccess),
+                                      Text(action.type == ActionType.ussd
+                                          ? l10n.ussdDialerOpenedSuccess
+                                          : l10n.smsAppOpenedSuccess),
                                     ],
                                   ),
                                   backgroundColor: colorScheme.primary,
@@ -193,7 +205,9 @@ class FormScreen extends HookConsumerWidget {
                                         color: Colors.white,
                                       ),
                                       const SizedBox(width: 8),
-                                      Text(l10n.smsAppFailed),
+                                      Text(action.type == ActionType.ussd
+                                          ? l10n.ussdDialerFailed
+                                          : l10n.smsAppFailed),
                                     ],
                                   ),
                                   backgroundColor: colorScheme.error,

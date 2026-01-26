@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sms/l10n/app_localizations.dart';
 import 'package:sms/domain/model/input_field.dart';
+import 'package:sms/domain/model/action_item.dart';
 import 'package:sms/features/sms_commands/form/logic/form_controller.dart';
 import 'package:sms/features/sms_commands/form/ui/saved_values_bottom_sheet.dart';
 
@@ -13,11 +14,13 @@ class DynamicFormWidget extends HookConsumerWidget {
     required this.fields,
     required this.formParams,
     required this.onSubmit,
+    this.actionType = ActionType.sms,
   });
 
   final List<InputField> fields;
   final FormParams formParams;
   final VoidCallback onSubmit;
+  final ActionType actionType;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -129,9 +132,9 @@ class DynamicFormWidget extends HookConsumerWidget {
                 }
               },
               iconAlignment: IconAlignment.end,
-              icon: const Icon(Icons.send),
+              icon: Icon(actionType == ActionType.ussd ? Icons.phone : Icons.send),
               label: Text(
-                l10n.sendSms,
+                actionType == ActionType.ussd ? l10n.dialUssd : l10n.sendSms,
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: .bold,
