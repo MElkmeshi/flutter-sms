@@ -59,6 +59,7 @@ class MyApp extends ConsumerWidget {
 
     return MaterialApp.router(
       title: 'SMS Commands',
+      debugShowCheckedModeBanner: false,
       routerConfig: appRouter.config(),
 
       // Localization
