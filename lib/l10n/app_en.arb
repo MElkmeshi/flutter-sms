@@ -50,6 +50,8 @@
   "noSavedValues": "No saved values yet",
   "noSavedValuesHint": "Enter a value and save it for quick access",
   "saveCurrentValue": "Save Current Value",
+  "addNewValue": "Add New Value",
+  "value": "Value",
   "valueName": "Name",
   "valueNameHint": "e.g. My Account",
   "valueNameRequired": "Name is required",

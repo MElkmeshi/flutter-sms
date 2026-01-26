@@ -50,6 +50,8 @@
   "noSavedValues": "لا توجد قيم محفوظة بعد",
   "noSavedValuesHint": "أدخل قيمة واحفظها للوصول السريع",
   "saveCurrentValue": "حفظ القيمة الحالية",
+  "addNewValue": "إضافة قيمة جديدة",
+  "value": "القيمة",
   "valueName": "الاسم",
   "valueNameHint": "مثال: حسابي",
   "valueNameRequired": "الاسم مطلوب",

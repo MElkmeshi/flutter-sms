@@ -2442,14 +2442,6 @@
             "color": "#43A047"
         },
         {
-            "id": "government",
-            "name_en": "Government",
-            "name_ar": "الحكومة",
-            "providers": [],
-            "icon": "business",
-            "color": "#1E88E5"
-        },
-        {
             "id": "telecom",
             "name_en": "Telecom",
             "name_ar": "الاتصالات",
@@ -2725,9 +2717,73 @@
                     "id": "libyana",
                     "name_en": "Libyana",
                     "name_ar": "ليبيانا",
-                    "description_en": "Electricity payment service via USSD. Subscribe to electricity packages through General Electricity Company of Libya.",
-                    "description_ar": "خدمة دفع الكهرباء عبر USSD. اشترك في باقات الكهرباء من خلال الشركة العامة للكهرباء ليبيا.",
+                    "image": "assets/images/providers/libyana.png",
+                    "description_en": "Libyana mobile services - balance, packages, electricity payment and more.",
+                    "description_ar": "خدمات ليبيانا - الرصيد، الباقات، دفع الكهرباء والمزيد.",
                     "actions": [
+                        {
+                            "id": "main_menu",
+                            "name_en": "Main Services Menu",
+                            "name_ar": "قائمة الخدمات الرئيسية",
+                            "type": "ussd",
+                            "ussdCode": "*121#",
+                            "fields": []
+                        },
+                        {
+                            "id": "top_up",
+                            "name_en": "Top Up Balance",
+                            "name_ar": "شحن الرصيد",
+                            "type": "ussd",
+                            "ussdCode": "*121*{card_number}#",
+                            "fields": [
+                                {
+                                    "id": "card_number",
+                                    "label_en": "Card Number",
+                                    "label_ar": "رقم الكرت",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "internet_packages",
+                            "name_en": "Internet Packages Menu",
+                            "name_ar": "قائمة باقات الإنترنت",
+                            "type": "ussd",
+                            "ussdCode": "*555#",
+                            "fields": []
+                        },
+                        {
+                            "id": "check_net_plus",
+                            "name_en": "Check Net Plus Packages",
+                            "name_ar": "معرفة باقات نت بلس المفعلة",
+                            "type": "ussd",
+                            "ussdCode": "*222#4",
+                            "fields": []
+                        },
+                        {
+                            "id": "check_net_all",
+                            "name_en": "Check Net For All Packages",
+                            "name_ar": "معرفة باقات نت للكل المفعلة",
+                            "type": "ussd",
+                            "ussdCode": "*222#1",
+                            "fields": []
+                        },
+                        {
+                            "id": "voicemail_password",
+                            "name_en": "Change Voicemail Password",
+                            "name_ar": "تغيير كلمة مرور البريد الصوتي",
+                            "type": "ussd",
+                            "ussdCode": "*126#",
+                            "fields": []
+                        },
+                        {
+                            "id": "internet_settings",
+                            "name_en": "Get Internet Settings",
+                            "name_ar": "الحصول على إعدادات الإنترنت",
+                            "smsNumber": "1515",
+                            "template": "1",
+                            "fields": []
+                        },
                         {
                             "id": "electricity_package",
                             "name_en": "Subscribe to Electricity Package",
@@ -2785,10 +2841,140 @@
                                     ]
                                 }
                             ]
+                        },
+                        {
+                            "id": "cancel_caller_tune",
+                            "name_en": "Cancel Caller Tune",
+                            "name_ar": "إلغاء نغمة المتصل",
+                            "smsNumber": "99128",
+                            "template": "إلغاء",
+                            "fields": []
+                        },
+                        {
+                            "id": "stop_services",
+                            "name_en": "Stop All Services",
+                            "name_ar": "إيقاف جميع الخدمات",
+                            "smsNumber": "15632",
+                            "template": "STOP",
+                            "fields": []
+                        },
+                        {
+                            "id": "cancel_tpay",
+                            "name_en": "Cancel T-Pay Service",
+                            "name_ar": "إلغاء خدمة T-Pay",
+                            "smsNumber": "15632",
+                            "template": "0",
+                            "fields": []
                         }
                     ],
                     "icon": "phone_android",
                     "color": "#4CAF50"
+                },
+                {
+                    "id": "almadar",
+                    "name_en": "Almadar Aljadid",
+                    "name_ar": "المدار الجديد",
+                    "image": "assets/images/providers/almadar.png",
+                    "description_en": "Almadar mobile services - balance, packages, caller tune and more.",
+                    "description_ar": "خدمات المدار - الرصيد، الباقات، نغمة المتصل والمزيد.",
+                    "actions": [
+                        {
+                            "id": "main_menu",
+                            "name_en": "Main Services Menu",
+                            "name_ar": "القائمة الرئيسية",
+                            "type": "ussd",
+                            "ussdCode": "*140#",
+                            "fields": []
+                        },
+                        {
+                            "id": "check_balance",
+                            "name_en": "Check Balance",
+                            "name_ar": "الاستعلام عن الرصيد",
+                            "type": "ussd",
+                            "ussdCode": "*111#",
+                            "fields": []
+                        },
+                        {
+                            "id": "top_up",
+                            "name_en": "Top Up Balance",
+                            "name_ar": "تعبئة الرصيد",
+                            "type": "ussd",
+                            "ussdCode": "*111*{card_number}#",
+                            "fields": [
+                                {
+                                    "id": "card_number",
+                                    "label_en": "Card Number",
+                                    "label_ar": "رقم الكرت",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "internet_packages",
+                            "name_en": "Internet Packages",
+                            "name_ar": "باقات الإنترنت",
+                            "type": "ussd",
+                            "ussdCode": "*000#",
+                            "fields": []
+                        },
+                        {
+                            "id": "reh_balak",
+                            "name_en": "Reh Balak Service",
+                            "name_ar": "خدمة ريح بالك",
+                            "type": "ussd",
+                            "ussdCode": "*149#",
+                            "fields": []
+                        },
+                        {
+                            "id": "check_bills",
+                            "name_en": "Check Bills",
+                            "name_ar": "الاستعلام عن الفواتير",
+                            "type": "ussd",
+                            "ussdCode": "*170#",
+                            "fields": []
+                        },
+                        {
+                            "id": "cancel_forwarding",
+                            "name_en": "Cancel Call Forwarding",
+                            "name_ar": "إلغاء تحويل المكالمات",
+                            "type": "ussd",
+                            "ussdCode": "##002#",
+                            "fields": []
+                        },
+                        {
+                            "id": "caller_tune_menu",
+                            "name_en": "Caller Tune Menu",
+                            "name_ar": "قائمة نغمة المتصل",
+                            "type": "ussd",
+                            "ussdCode": "*128#",
+                            "fields": []
+                        },
+                        {
+                            "id": "cancel_caller_tune",
+                            "name_en": "Cancel Caller Tune",
+                            "name_ar": "إلغاء نغمة المتصل",
+                            "smsNumber": "9900",
+                            "template": "إلغاء",
+                            "fields": []
+                        },
+                        {
+                            "id": "delete_specific_tune",
+                            "name_en": "Delete Specific Tune",
+                            "name_ar": "حذف نغمة معينة",
+                            "smsNumber": "9900",
+                            "template": "حذف {tune_code}",
+                            "fields": [
+                                {
+                                    "id": "tune_code",
+                                    "label_en": "Tune Code",
+                                    "label_ar": "رمز النغمة",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    ],
+                    "icon": "cell_tower",
+                    "color": "#E91E63"
                 }
             ],
             "icon": "cell_tower",

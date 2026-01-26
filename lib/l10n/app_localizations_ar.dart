@@ -115,6 +115,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get saveCurrentValue => 'حفظ القيمة الحالية';
 
   @override
+  String get addNewValue => 'إضافة قيمة جديدة';
+
+  @override
+  String get value => 'القيمة';
+
+  @override
   String get valueName => 'الاسم';
 
   @override

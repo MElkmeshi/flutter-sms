@@ -6,6 +6,8 @@ import 'package:sms/l10n/app_localizations.dart';
 import 'package:sms/domain/model/input_field.dart';
 import 'package:sms/domain/model/action_item.dart';
 import 'package:sms/features/sms_commands/form/logic/form_controller.dart';
+import 'package:sms/features/sms_commands/form/logic/saved_values_controller.dart';
+import 'package:sms/features/sms_commands/form/models/saved_field_value.dart';
 import 'package:sms/features/sms_commands/form/ui/saved_values_bottom_sheet.dart';
 
 class DynamicFormWidget extends HookConsumerWidget {
@@ -242,32 +244,93 @@ class DynamicFormWidget extends HookConsumerWidget {
   ) {
     switch (field.type) {
       case 'text':
-        return TextFormField(
-          controller: controllers[field.id],
-          decoration: InputDecoration(
-            hintText: l10n.enterField(label),
-            prefixIcon: Icon(
-              _getFieldIcon(field.id),
-              color: colorScheme.onSurfaceVariant,
-            ),
-            suffixIcon: IconButton(
-              icon: Icon(Icons.bookmark_border, size: 20, color: colorScheme.primary),
-              onPressed: () => _showSavedValuesSheet(
-                context, ref, field, label, controllers[field.id]!, formValues,
-              ),
-            ),
-          ),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return l10n.fieldRequired(label);
+        final savedValues = ref.watch(SavedValuesController.provider(field.id));
+
+        return Autocomplete<SavedFieldValue>(
+          optionsBuilder: (textEditingValue) {
+            if (textEditingValue.text.isEmpty) {
+              return const Iterable<SavedFieldValue>.empty();
             }
-            return null;
+            return savedValues.where((item) =>
+              item.value.toLowerCase().contains(textEditingValue.text.toLowerCase())
+            );
           },
-          onChanged: (value) {
-            // Update form values in real-time via controller
+          displayStringForOption: (option) => option.value,
+          onSelected: (selection) {
+            controllers[field.id]!.text = selection.value;
             ref
                 .read(FormController.provider(formParams).notifier)
-                .updateField(field.id, value);
+                .updateField(field.id, selection.value);
+          },
+          optionsViewBuilder: (context, onSelected, options) {
+            return Align(
+              alignment: AlignmentDirectional.topStart,
+              child: Material(
+                elevation: 4,
+                borderRadius: BorderRadius.circular(8),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 200, maxWidth: 300),
+                  child: ListView.builder(
+                    padding: EdgeInsets.zero,
+                    shrinkWrap: true,
+                    itemCount: options.length,
+                    itemBuilder: (context, index) {
+                      final option = options.elementAt(index);
+                      return ListTile(
+                        dense: true,
+                        title: Text(option.value),
+                        subtitle: Text(
+                          option.name,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                        onTap: () => onSelected(option),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            );
+          },
+          fieldViewBuilder: (context, textController, focusNode, onFieldSubmitted) {
+            // Sync the autocomplete controller with our controller
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (controllers[field.id]!.text != textController.text) {
+                textController.text = controllers[field.id]!.text;
+              }
+            });
+
+            return TextFormField(
+              controller: textController,
+              focusNode: focusNode,
+              decoration: InputDecoration(
+                hintText: l10n.enterField(label),
+                prefixIcon: Icon(
+                  _getFieldIcon(field.id),
+                  color: colorScheme.onSurfaceVariant,
+                ),
+                suffixIcon: IconButton(
+                  icon: Icon(Icons.bookmark_border, size: 20, color: colorScheme.primary),
+                  onPressed: () => _handleBookmarkPressed(
+                    context, ref, field, label, controllers[field.id]!,
+                  ),
+                ),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return l10n.fieldRequired(label);
+                }
+                return null;
+              },
+              onChanged: (value) {
+                controllers[field.id]!.text = value;
+                ref
+                    .read(FormController.provider(formParams).notifier)
+                    .updateField(field.id, value);
+              },
+            );
           },
         );
 
@@ -314,13 +377,30 @@ class DynamicFormWidget extends HookConsumerWidget {
     }
   }
 
+  void _handleBookmarkPressed(
+    BuildContext context,
+    WidgetRef ref,
+    InputField field,
+    String label,
+    TextEditingController textController,
+  ) {
+    final currentValue = textController.text.trim();
+
+    if (currentValue.isNotEmpty) {
+      // Field has value - show save dialog with name autocomplete
+      _showSaveNameDialog(context, ref, field, label, currentValue);
+    } else {
+      // Field is empty - show saved values to select from
+      _showSavedValuesSheet(context, ref, field, label, textController);
+    }
+  }
+
   void _showSavedValuesSheet(
     BuildContext context,
     WidgetRef ref,
     InputField field,
     String label,
     TextEditingController textController,
-    Map<String, String> formValues,
   ) {
     showModalBottomSheet(
       context: context,
@@ -331,13 +411,107 @@ class DynamicFormWidget extends HookConsumerWidget {
       builder: (_) => SavedValuesBottomSheet(
         fieldId: field.id,
         fieldLabel: label,
-        currentValue: textController.text,
         onValueSelected: (value) {
           textController.text = value;
           ref
               .read(FormController.provider(formParams).notifier)
               .updateField(field.id, value);
         },
+      ),
+    );
+  }
+
+  void _showSaveNameDialog(
+    BuildContext context,
+    WidgetRef ref,
+    InputField field,
+    String label,
+    String valueToSave,
+  ) {
+    final l10n = AppLocalizations.of(context)!;
+    final colorScheme = Theme.of(context).colorScheme;
+    final nameController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.saveCurrentValue),
+        content: Form(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Show the value being saved
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.text_fields, size: 18, color: colorScheme.primary),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        valueToSave,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: colorScheme.onSurface,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: nameController,
+                autofocus: true,
+                decoration: InputDecoration(
+                  labelText: l10n.valueName,
+                  hintText: l10n.valueNameHint,
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return l10n.valueNameRequired;
+                  }
+                  return null;
+                },
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l10n.goBack),
+          ),
+          FilledButton(
+            onPressed: () {
+              if (formKey.currentState!.validate()) {
+                ref
+                    .read(SavedValuesController.provider(field.id).notifier)
+                    .addValue(SavedFieldValue(
+                      name: nameController.text.trim(),
+                      value: valueToSave,
+                    ));
+                Navigator.of(ctx).pop();
+                // Show confirmation
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(l10n.saved),
+                    duration: const Duration(seconds: 1),
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+              }
+            },
+            child: Text(l10n.ok),
+          ),
+        ],
       ),
     );
   }

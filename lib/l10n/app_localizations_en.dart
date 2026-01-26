@@ -115,6 +115,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saveCurrentValue => 'Save Current Value';
 
   @override
+  String get addNewValue => 'Add New Value';
+
+  @override
+  String get value => 'Value';
+
+  @override
   String get valueName => 'Name';
 
   @override

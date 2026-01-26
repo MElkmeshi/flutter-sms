@@ -10,13 +10,11 @@ class SavedValuesBottomSheet extends HookConsumerWidget {
     super.key,
     required this.fieldId,
     required this.fieldLabel,
-    required this.currentValue,
     required this.onValueSelected,
   });
 
   final String fieldId;
   final String fieldLabel;
-  final String currentValue;
   final ValueChanged<String> onValueSelected;
 
   @override
@@ -66,16 +64,14 @@ class SavedValuesBottomSheet extends HookConsumerWidget {
                     : _buildValuesList(
                         context, ref, savedValues, colorScheme, l10n, scrollController),
               ),
-              // Save current value button
+              // Add new value button
               const SizedBox(height: 8),
               SafeArea(
                 child: FilledButton.icon(
-                  onPressed: currentValue.isEmpty
-                      ? null
-                      : () => _showSaveDialog(context, ref, l10n, colorScheme),
-                  icon: const Icon(Icons.save, size: 18),
+                  onPressed: () => _showAddValueDialog(context, ref, l10n, colorScheme),
+                  icon: const Icon(Icons.add, size: 18),
                   label: Text(
-                    l10n.saveCurrentValue,
+                    l10n.addNewValue,
                     style: GoogleFonts.ibmPlexSans(fontWeight: FontWeight.w600),
                   ),
                   style: FilledButton.styleFrom(
@@ -223,34 +219,54 @@ class SavedValuesBottomSheet extends HookConsumerWidget {
     );
   }
 
-  void _showSaveDialog(
+  void _showAddValueDialog(
     BuildContext context,
     WidgetRef ref,
     AppLocalizations l10n,
     ColorScheme colorScheme,
   ) {
     final nameController = TextEditingController();
+    final valueController = TextEditingController();
     final formKey = GlobalKey<FormState>();
 
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(l10n.saveCurrentValue),
+        title: Text(l10n.addNewValue),
         content: Form(
           key: formKey,
-          child: TextFormField(
-            controller: nameController,
-            autofocus: true,
-            decoration: InputDecoration(
-              labelText: l10n.valueName,
-              hintText: l10n.valueNameHint,
-            ),
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return l10n.valueNameRequired;
-              }
-              return null;
-            },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: nameController,
+                autofocus: true,
+                decoration: InputDecoration(
+                  labelText: l10n.valueName,
+                  hintText: l10n.valueNameHint,
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return l10n.valueNameRequired;
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: valueController,
+                decoration: InputDecoration(
+                  labelText: l10n.value,
+                  hintText: l10n.enterField(fieldLabel),
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return l10n.fieldRequired(l10n.value);
+                  }
+                  return null;
+                },
+              ),
+            ],
           ),
         ),
         actions: [
@@ -265,7 +281,7 @@ class SavedValuesBottomSheet extends HookConsumerWidget {
                     .read(SavedValuesController.provider(fieldId).notifier)
                     .addValue(SavedFieldValue(
                       name: nameController.text.trim(),
-                      value: currentValue,
+                      value: valueController.text.trim(),
                     ));
                 Navigator.of(ctx).pop();
               }

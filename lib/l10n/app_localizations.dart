@@ -299,6 +299,18 @@ abstract class AppLocalizations {
   /// **'Save Current Value'**
   String get saveCurrentValue;
 
+  /// No description provided for @addNewValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Add New Value'**
+  String get addNewValue;
+
+  /// No description provided for @value.
+  ///
+  /// In en, this message translates to:
+  /// **'Value'**
+  String get value;
+
   /// No description provided for @valueName.
   ///
   /// In en, this message translates to:
