@@ -8,6 +8,7 @@ import 'package:sms/domain/model/category.dart';
 import 'package:sms/domain/model/service_provider.dart';
 import 'package:sms/features/sms_commands/action_list/logic/action_list_controller.dart';
 import 'package:sms/features/sms_commands/shared/widgets/action_list_item.dart';
+import 'package:sms/ui/theme/design_tokens.dart';
 
 @RoutePage()
 class ActionListScreen extends HookConsumerWidget {
@@ -38,12 +39,12 @@ class ActionListScreen extends HookConsumerWidget {
         ),
       ),
       body: ListView.builder(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(AppSpacing.lg),
         itemCount: actions.length,
         itemBuilder: (context, index) {
           final action = actions[index];
           return Padding(
-            padding: const EdgeInsets.only(bottom: 12),
+            padding: EdgeInsets.only(bottom: AppSpacing.md),
             child: ActionListItem(
               action: action,
               onTap: () {

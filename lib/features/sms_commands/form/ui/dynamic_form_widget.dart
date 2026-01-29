@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:sms/l10n/app_localizations.dart';
 import 'package:sms/domain/model/input_field.dart';
 import 'package:sms/domain/model/action_item.dart';
@@ -9,6 +8,7 @@ import 'package:sms/features/sms_commands/form/logic/form_controller.dart';
 import 'package:sms/features/sms_commands/form/logic/saved_values_controller.dart';
 import 'package:sms/features/sms_commands/form/models/saved_field_value.dart';
 import 'package:sms/features/sms_commands/form/ui/saved_values_bottom_sheet.dart';
+import 'package:sms/ui/theme/design_tokens.dart';
 
 class DynamicFormWidget extends HookConsumerWidget {
   const DynamicFormWidget({
@@ -28,6 +28,7 @@ class DynamicFormWidget extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
     // Create form key with useMemoized
     final formKey = useMemoized(() => GlobalKey<FormState>());
@@ -55,51 +56,55 @@ class DynamicFormWidget extends HookConsumerWidget {
       return null;
     }, [formState.formValues]);
 
+    // Check if there are any values to clear
+    final hasValuesToClear = formState.formValues.values.any((value) => value.isNotEmpty);
+
     return Form(
       key: formKey,
       child: Column(
-        crossAxisAlignment: .stretch,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Form Header with Clear Button
           Row(
-            mainAxisAlignment: .spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 l10n.formFields,
-                style: GoogleFonts.ibmPlexSans(
-                  fontSize: 16,
-                  fontWeight: .bold,
+                style: textTheme.titleMedium?.copyWith(
+                  fontSize: AppFontSize.xl,
+                  fontWeight: FontWeight.bold,
                   color: colorScheme.onSurface,
                 ),
               ),
-              TextButton.icon(
-                onPressed: () {
-                  // Clear all controllers
-                  for (final controller in controllers.values) {
-                    controller.clear();
-                  }
-                  // Clear form values in controller
-                  ref.read(FormController.provider(formParams).notifier).clearForm();
-                },
-                icon: const Icon(Icons.clear, size: 16),
-                label: Text(
-                  l10n.clearAll,
-                  style: GoogleFonts.ibmPlexSans(
-                    fontSize: 12,
-                    fontWeight: .w500,
+              if (hasValuesToClear)
+                TextButton.icon(
+                  onPressed: () {
+                    // Clear all controllers
+                    for (final controller in controllers.values) {
+                      controller.clear();
+                    }
+                    // Clear form values in controller
+                    ref.read(FormController.provider(formParams).notifier).clearForm();
+                  },
+                  icon: Icon(Icons.clear, size: AppIconSize.sm),
+                  label: Text(
+                    l10n.clearAll,
+                    style: textTheme.bodySmall?.copyWith(
+                      fontSize: AppFontSize.sm,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  style: TextButton.styleFrom(
+                    foregroundColor: colorScheme.error,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md,
+                      vertical: AppSpacing.sm,
+                    ),
                   ),
                 ),
-                style: TextButton.styleFrom(
-                  foregroundColor: colorScheme.error,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                ),
-              ),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: AppSpacing.lg),
 
           // Form fields
           ...fields.map((field) {
@@ -107,7 +112,7 @@ class DynamicFormWidget extends HookConsumerWidget {
             final label = isArabic ? field.labelAr : field.labelEn;
 
             return Padding(
-              padding: const EdgeInsets.only(bottom: 20),
+              padding: EdgeInsets.only(bottom: AppSpacing.xl),
               child: _buildFormField(
                 context,
                 ref,
@@ -117,11 +122,12 @@ class DynamicFormWidget extends HookConsumerWidget {
                 controllers,
                 formState.formValues,
                 colorScheme,
+                textTheme,
               ),
             );
           }),
 
-          const SizedBox(height: 32),
+          SizedBox(height: AppSpacing.xxxl),
 
           // Submit button
           SizedBox(
@@ -137,9 +143,9 @@ class DynamicFormWidget extends HookConsumerWidget {
               icon: Icon(actionType == ActionType.ussd ? Icons.phone : Icons.send),
               label: Text(
                 actionType == ActionType.ussd ? l10n.dialUssd : l10n.sendSms,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: .bold,
+                style: TextStyle(
+                  fontSize: AppFontSize.xl,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               style: ElevatedButton.styleFrom(
@@ -147,7 +153,7 @@ class DynamicFormWidget extends HookConsumerWidget {
                 foregroundColor: colorScheme.onPrimary,
                 elevation: 4,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(AppRadius.lg),
                 ),
               ),
             ),
@@ -166,11 +172,12 @@ class DynamicFormWidget extends HookConsumerWidget {
     Map<String, TextEditingController> controllers,
     Map<String, String> formValues,
     ColorScheme colorScheme,
+    TextTheme textTheme,
   ) {
     final hasSavedValue = formValues[field.id]?.isNotEmpty == true;
 
     return Column(
-      crossAxisAlignment: .start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Field label with saved indicator
         Row(
@@ -178,35 +185,38 @@ class DynamicFormWidget extends HookConsumerWidget {
             Expanded(
               child: Text(
                 label,
-                style: GoogleFonts.ibmPlexSans(
-                  fontSize: 14,
-                  fontWeight: .w600,
+                style: textTheme.bodyMedium?.copyWith(
+                  fontSize: AppFontSize.md,
+                  fontWeight: FontWeight.w600,
                   color: colorScheme.onSurface,
                 ),
               ),
             ),
             if (hasSavedValue)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppSpacing.sm,
+                  vertical: AppSpacing.xs / 2,
+                ),
                 decoration: BoxDecoration(
                   color: colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                   border: Border.all(color: colorScheme.primary),
                 ),
                 child: Row(
-                  mainAxisSize: .min,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
                       Icons.check_circle,
-                      size: 12,
+                      size: AppIconSize.xs,
                       color: colorScheme.primary,
                     ),
-                    const SizedBox(width: 4),
+                    SizedBox(width: AppSpacing.xs),
                     Text(
                       l10n.saved,
-                      style: GoogleFonts.ibmPlexSans(
-                        fontSize: 10,
-                        fontWeight: .w600,
+                      style: textTheme.bodySmall?.copyWith(
+                        fontSize: AppFontSize.xs,
+                        fontWeight: FontWeight.w600,
                         color: colorScheme.primary,
                       ),
                     ),
@@ -215,7 +225,7 @@ class DynamicFormWidget extends HookConsumerWidget {
               ),
           ],
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: AppSpacing.sm),
 
         // Form field
         _buildFieldWidget(
@@ -267,7 +277,7 @@ class DynamicFormWidget extends HookConsumerWidget {
               alignment: AlignmentDirectional.topStart,
               child: Material(
                 elevation: 4,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxHeight: 200, maxWidth: 300),
                   child: ListView.builder(
@@ -282,7 +292,7 @@ class DynamicFormWidget extends HookConsumerWidget {
                         subtitle: Text(
                           option.name,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: AppFontSize.sm,
                             color: colorScheme.onSurfaceVariant,
                           ),
                         ),
@@ -305,6 +315,8 @@ class DynamicFormWidget extends HookConsumerWidget {
             return TextFormField(
               controller: textController,
               focusNode: focusNode,
+              enableInteractiveSelection: true,
+              canRequestFocus: true,
               decoration: InputDecoration(
                 hintText: l10n.enterField(label),
                 prefixIcon: Icon(
@@ -312,7 +324,7 @@ class DynamicFormWidget extends HookConsumerWidget {
                   color: colorScheme.onSurfaceVariant,
                 ),
                 suffixIcon: IconButton(
-                  icon: Icon(Icons.bookmark_border, size: 20, color: colorScheme.primary),
+                  icon: Icon(Icons.bookmark_border, size: AppIconSize.lg, color: colorScheme.primary),
                   onPressed: () => _handleBookmarkPressed(
                     context, ref, field, label, controllers[field.id]!,
                   ),
@@ -405,8 +417,9 @@ class DynamicFormWidget extends HookConsumerWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      backgroundColor: Colors.transparent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
       ),
       builder: (_) => SavedValuesBottomSheet(
         fieldId: field.id,
@@ -445,15 +458,15 @@ class DynamicFormWidget extends HookConsumerWidget {
             children: [
               // Show the value being saved
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: EdgeInsets.all(AppSpacing.md),
                 decoration: BoxDecoration(
                   color: colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.text_fields, size: 18, color: colorScheme.primary),
-                    const SizedBox(width: 8),
+                    Icon(Icons.text_fields, size: AppIconSize.md, color: colorScheme.primary),
+                    SizedBox(width: AppSpacing.sm),
                     Expanded(
                       child: Text(
                         valueToSave,
@@ -466,7 +479,7 @@ class DynamicFormWidget extends HookConsumerWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: AppSpacing.lg),
               TextFormField(
                 controller: nameController,
                 autofocus: true,

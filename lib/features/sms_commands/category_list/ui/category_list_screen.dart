@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:sms/l10n/app_localizations.dart';
 import 'package:sms/core/routing/app_router.dart';
 import 'package:sms/core/initializer/app_providers.dart';
 import 'package:sms/core/services/config_service.dart';
 import 'package:sms/features/sms_commands/category_list/logic/category_list_controller.dart';
 import 'package:sms/features/sms_commands/shared/widgets/category_list_item.dart';
+import 'package:sms/ui/theme/design_tokens.dart';
+import 'package:sms/ui/widget/x_scaffold.dart';
+import 'package:sms/ui/widget/x_app_bar.dart';
 
 @RoutePage()
 class CategoryListScreen extends HookConsumerWidget {
@@ -17,32 +19,33 @@ class CategoryListScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final categoriesAsync = ref.watch(CategoryListController.provider);
 
-    return Scaffold(
-      appBar: AppBar(
+    return XScaffold(
+      appBar: XAppBar(
         title: GestureDetector(
           onLongPress: () => _showConfigUrlDialog(context, ref),
-          child: Text(
-            l10n.appTitle,
-            style: GoogleFonts.ibmPlexSans(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: colorScheme.onSurface,
-            ),
-          ),
+          child: Text(l10n.appTitle),
         ),
-        centerTitle: true,
         actions: [
           TextButton(
             onPressed: () => ref.read(localeProvider.notifier).toggle(),
             child: Text(
               ref.watch(localeProvider) == 'ar' ? 'EN' : 'ع',
-              style: GoogleFonts.ibmPlexSans(
-                fontSize: 14,
+              style: textTheme.bodyMedium?.copyWith(
+                fontSize: AppFontSize.md,
                 fontWeight: FontWeight.w600,
               ),
             ),
+          ),
+          IconButton(
+            icon: Icon(
+              ref.watch(themeModeProvider)
+                ? Icons.light_mode_outlined
+                : Icons.dark_mode_outlined,
+            ),
+            onPressed: () => ref.read(themeModeProvider.notifier).toggle(),
           ),
           IconButton(
             icon: const Icon(Icons.info_outline),
@@ -54,17 +57,20 @@ class CategoryListScreen extends HookConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => _buildErrorState(context, error.toString(), ref, l10n),
         data: (categories) => ListView.separated(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.md,
+          ),
           itemCount: categories.length + 1,
-          separatorBuilder: (_, _) => const SizedBox(height: 10),
+          separatorBuilder: (_, _) => SizedBox(height: AppSpacing.sm),
           itemBuilder: (context, index) {
             if (index == 0) {
               return Padding(
-                padding: const EdgeInsets.only(bottom: 8),
+                padding: EdgeInsets.only(bottom: AppSpacing.sm),
                 child: Text(
                   l10n.selectCategoryDescription,
-                  style: GoogleFonts.ibmPlexSans(
-                    fontSize: 14,
+                  style: textTheme.bodyMedium?.copyWith(
+                    fontSize: AppFontSize.md,
                     color: colorScheme.onSurfaceVariant,
                   ),
                 ),
@@ -90,28 +96,29 @@ class CategoryListScreen extends HookConsumerWidget {
     AppLocalizations l10n,
   ) {
     final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: EdgeInsets.all(AppSpacing.xxxl),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.error_outline, size: 48, color: colorScheme.error),
-            const SizedBox(height: 16),
+            Icon(Icons.error_outline, size: AppIconSize.xxl, color: colorScheme.error),
+            SizedBox(height: AppSpacing.lg),
             Text(
               errorMessage,
               textAlign: TextAlign.center,
-              style: GoogleFonts.ibmPlexSans(
-                fontSize: 14,
+              style: textTheme.bodyMedium?.copyWith(
+                fontSize: AppFontSize.md,
                 color: colorScheme.onSurfaceVariant,
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: AppSpacing.xxl),
             FilledButton.icon(
               onPressed: () {
                 ref.read(CategoryListController.provider.notifier).refresh();
               },
-              icon: const Icon(Icons.refresh, size: 18),
+              icon: Icon(Icons.refresh, size: AppIconSize.md),
               label: Text(l10n.retry),
             ),
           ],

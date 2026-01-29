@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:sms/l10n/app_localizations.dart';
 import 'package:sms/features/sms_commands/form/logic/saved_values_controller.dart';
 import 'package:sms/features/sms_commands/form/models/saved_field_value.dart';
+import 'package:sms/ui/theme/design_tokens.dart';
 
 class SavedValuesBottomSheet extends HookConsumerWidget {
   const SavedValuesBottomSheet({
@@ -21,6 +21,7 @@ class SavedValuesBottomSheet extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final savedValues = ref.watch(SavedValuesController.provider(fieldId));
 
     return DraggableScrollableSheet(
@@ -29,61 +30,69 @@ class SavedValuesBottomSheet extends HookConsumerWidget {
       maxChildSize: 0.8,
       expand: false,
       builder: (context, scrollController) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 8),
-              // Drag handle
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
-                    borderRadius: BorderRadius.circular(2),
+        return Container(
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(AppRadius.xl),
+            ),
+          ),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(height: AppSpacing.sm),
+                // Drag handle
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
+                SizedBox(height: AppSpacing.lg),
               // Title
               Text(
                 '${l10n.savedValues} - $fieldLabel',
-                style: GoogleFonts.ibmPlexSans(
-                  fontSize: 18,
+                style: textTheme.titleMedium?.copyWith(
+                  fontSize: AppFontSize.xxl,
                   fontWeight: FontWeight.bold,
                   color: colorScheme.onSurface,
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: AppSpacing.lg),
               // List or empty state
               Expanded(
                 child: savedValues.isEmpty
-                    ? _buildEmptyState(context, l10n, colorScheme)
+                    ? _buildEmptyState(context, l10n, colorScheme, textTheme)
                     : _buildValuesList(
-                        context, ref, savedValues, colorScheme, l10n, scrollController),
+                        context, ref, savedValues, colorScheme, l10n, scrollController, textTheme),
               ),
               // Add new value button
-              const SizedBox(height: 8),
+              SizedBox(height: AppSpacing.sm),
               SafeArea(
                 child: FilledButton.icon(
                   onPressed: () => _showAddValueDialog(context, ref, l10n, colorScheme),
-                  icon: const Icon(Icons.add, size: 18),
+                  icon: Icon(Icons.add, size: AppIconSize.md),
                   label: Text(
                     l10n.addNewValue,
-                    style: GoogleFonts.ibmPlexSans(fontWeight: FontWeight.w600),
+                    style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
                   ),
                   style: FilledButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppRadius.md),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 8),
-            ],
+              SizedBox(height: AppSpacing.sm),
+              ],
+            ),
           ),
         );
       },
@@ -94,6 +103,7 @@ class SavedValuesBottomSheet extends HookConsumerWidget {
     BuildContext context,
     AppLocalizations l10n,
     ColorScheme colorScheme,
+    TextTheme textTheme,
   ) {
     return Center(
       child: Column(
@@ -101,24 +111,24 @@ class SavedValuesBottomSheet extends HookConsumerWidget {
         children: [
           Icon(
             Icons.bookmark_border,
-            size: 48,
+            size: AppIconSize.xxl,
             color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: AppSpacing.md),
           Text(
             l10n.noSavedValues,
-            style: GoogleFonts.ibmPlexSans(
-              fontSize: 16,
+            style: textTheme.titleMedium?.copyWith(
+              fontSize: AppFontSize.xl,
               fontWeight: FontWeight.w600,
               color: colorScheme.onSurfaceVariant,
             ),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: AppSpacing.xs),
           Text(
             l10n.noSavedValuesHint,
             textAlign: TextAlign.center,
-            style: GoogleFonts.ibmPlexSans(
-              fontSize: 13,
+            style: textTheme.bodySmall?.copyWith(
+              fontSize: AppFontSize.sm + 1,
               color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
             ),
           ),
@@ -134,18 +144,19 @@ class SavedValuesBottomSheet extends HookConsumerWidget {
     ColorScheme colorScheme,
     AppLocalizations l10n,
     ScrollController scrollController,
+    TextTheme textTheme,
   ) {
     return ListView.separated(
       controller: scrollController,
       itemCount: values.length,
-      separatorBuilder: (_, _) => const SizedBox(height: 8),
+      separatorBuilder: (_, _) => SizedBox(height: AppSpacing.sm),
       itemBuilder: (context, index) {
         final item = values[index];
         return Card(
           elevation: 0,
           color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.md),
           ),
           child: ListTile(
             onTap: () {
@@ -157,20 +168,20 @@ class SavedValuesBottomSheet extends HookConsumerWidget {
               child: Icon(
                 Icons.bookmark,
                 color: colorScheme.primary,
-                size: 18,
+                size: AppIconSize.md,
               ),
             ),
             title: Text(
               item.name,
-              style: GoogleFonts.ibmPlexSans(
+              style: textTheme.bodyLarge?.copyWith(
                 fontWeight: FontWeight.w600,
                 color: colorScheme.onSurface,
               ),
             ),
             subtitle: Text(
               item.value,
-              style: GoogleFonts.ibmPlexSans(
-                fontSize: 13,
+              style: textTheme.bodySmall?.copyWith(
+                fontSize: AppFontSize.sm + 1,
                 color: colorScheme.onSurfaceVariant,
               ),
             ),
@@ -178,7 +189,7 @@ class SavedValuesBottomSheet extends HookConsumerWidget {
               icon: Icon(
                 Icons.delete_outline,
                 color: colorScheme.error,
-                size: 20,
+                size: AppIconSize.lg,
               ),
               onPressed: () => _confirmDelete(context, ref, index, l10n, colorScheme),
             ),
@@ -252,7 +263,7 @@ class SavedValuesBottomSheet extends HookConsumerWidget {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: AppSpacing.lg),
               TextFormField(
                 controller: valueController,
                 decoration: InputDecoration(

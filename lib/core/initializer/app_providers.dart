@@ -41,3 +41,22 @@ class LocaleNotifier extends Notifier<String> {
     ref.read(localStorageServiceProvider).setString(_key, newLocale);
   }
 }
+
+/// Provider for the app theme mode (user can toggle between light and dark)
+final themeModeProvider = NotifierProvider<ThemeModeNotifier, bool>(ThemeModeNotifier.new);
+
+class ThemeModeNotifier extends Notifier<bool> {
+  static const _key = 'is_dark_mode';
+  static const _settingsBox = 'settings';
+
+  @override
+  bool build() {
+    final localStorage = ref.watch(localStorageServiceProvider);
+    return localStorage.getData<bool>(_settingsBox, _key) ?? false;
+  }
+
+  void toggle() {
+    state = !state;
+    ref.read(localStorageServiceProvider).saveData(_settingsBox, _key, state);
+  }
+}

@@ -9,6 +9,7 @@ import 'package:sms/core/routing/app_router.dart';
 import 'package:sms/core/initializer/app_providers.dart';
 import 'package:sms/core/utils/icon_mapper.dart';
 import 'package:sms/domain/model/app_config.dart';
+import 'package:sms/ui/theme/design_tokens.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -56,6 +57,7 @@ class MyApp extends ConsumerWidget {
         .toList();
 
     final currentLocale = Locale(ref.watch(localeProvider));
+    final isDarkMode = ref.watch(themeModeProvider);
 
     return MaterialApp.router(
       title: 'SMS Commands',
@@ -73,19 +75,23 @@ class MyApp extends ConsumerWidget {
       locale: currentLocale,
 
       // Theme
-      theme: _buildTheme(context, primaryColor),
+      theme: _buildTheme(context, primaryColor, Brightness.light),
+      darkTheme: _buildTheme(context, primaryColor, Brightness.dark),
+      themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
     );
   }
 
-  ThemeData _buildTheme(BuildContext context, Color primaryColor) {
+  ThemeData _buildTheme(BuildContext context, Color primaryColor, Brightness brightness) {
     const fontFamily = 'IBMPlexSansArabic';
+
+    final colorScheme = ColorScheme.fromSeed(
+      seedColor: primaryColor,
+      brightness: brightness,
+    );
 
     return ThemeData(
       useMaterial3: true,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: primaryColor,
-        brightness: Brightness.light,
-      ),
+      colorScheme: colorScheme,
 
       fontFamily: fontFamily,
 
@@ -93,12 +99,12 @@ class MyApp extends ConsumerWidget {
         elevation: 0,
         centerTitle: true,
         backgroundColor: Colors.transparent,
-        foregroundColor: Colors.black87,
-        titleTextStyle: const TextStyle(
+        foregroundColor: colorScheme.onSurface,
+        titleTextStyle: TextStyle(
           fontFamily: fontFamily,
-          fontSize: 20,
+          fontSize: AppFontSize.xxxl,
           fontWeight: FontWeight.w600,
-          color: Colors.black87,
+          color: colorScheme.onSurface,
         ),
       ),
 
@@ -106,7 +112,7 @@ class MyApp extends ConsumerWidget {
         elevation: 3,
         shadowColor: Colors.black.withAlpha(26),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(AppRadius.md),
         ),
       ),
 
@@ -115,7 +121,7 @@ class MyApp extends ConsumerWidget {
           elevation: 3,
           shadowColor: Colors.black.withAlpha(51),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppRadius.lg),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           textStyle: const TextStyle(
@@ -128,26 +134,26 @@ class MyApp extends ConsumerWidget {
 
       inputDecorationTheme: InputDecorationTheme(
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Colors.grey, width: 1.5),
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          borderSide: BorderSide(color: colorScheme.outline, width: 1.5),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Colors.grey, width: 1.5),
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          borderSide: BorderSide(color: colorScheme.outline, width: 1.5),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppRadius.lg),
           borderSide: BorderSide(color: primaryColor, width: 2.5),
         ),
         filled: true,
-        fillColor: Colors.grey.shade50,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 16,
+        fillColor: colorScheme.surfaceContainerHighest,
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.xl,
+          vertical: AppSpacing.lg,
         ),
-        labelStyle: const TextStyle(
+        labelStyle: TextStyle(
           fontFamily: fontFamily,
-          fontSize: 14,
+          fontSize: AppFontSize.md,
           fontWeight: FontWeight.w500,
         ),
       ),
@@ -155,11 +161,11 @@ class MyApp extends ConsumerWidget {
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.md),
         ),
-        contentTextStyle: const TextStyle(
+        contentTextStyle: TextStyle(
           fontFamily: fontFamily,
-          fontSize: 14,
+          fontSize: AppFontSize.md,
           fontWeight: FontWeight.w500,
         ),
       ),

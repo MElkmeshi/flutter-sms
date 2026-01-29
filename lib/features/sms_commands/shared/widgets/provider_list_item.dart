@@ -3,6 +3,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sms/l10n/app_localizations.dart';
 import 'package:sms/domain/model/service_provider.dart';
 import 'package:sms/core/utils/icon_mapper.dart';
+import 'package:sms/ui/theme/design_tokens.dart';
+import 'package:sms/ui/widget/x_card.dart';
 
 class ProviderListItem extends StatelessWidget {
   final ServiceProvider provider;
@@ -18,6 +20,7 @@ class ProviderListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final name = isArabic ? provider.nameAr : provider.nameEn;
     final description = isArabic
@@ -29,79 +32,78 @@ class ProviderListItem extends StatelessWidget {
       fallback: colorScheme.primary,
     );
 
-    return Card(
-      elevation: 0,
-      color: colorScheme.surfaceContainerLow,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          child: Row(
-            children: [
-              // Image or Icon
-              _buildProviderImage(provider.image, icon, color),
-              const SizedBox(width: 14),
+    return XCard(
+      onTap: onTap,
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.md,
+        ),
+        child: Row(
+          children: [
+            // Image or Icon
+            _buildProviderImage(provider.image, icon, color, colorScheme),
+            SizedBox(width: AppSpacing.md),
 
-              // Name, description & action count
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+            // Name, description & action count
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: textTheme.bodyLarge?.copyWith(
+                      fontSize: AppFontSize.lg,
+                      fontWeight: FontWeight.w600,
+                      color: colorScheme.onSurface,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (description != null) ...[
+                    SizedBox(height: AppSpacing.xs),
                     Text(
-                      name,
-                      style: _getTextStyle(
-                        isArabic: isArabic,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: colorScheme.onSurface,
-                      ),
+                      description,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                    ),
-                    if (description != null) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        description,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: _getTextStyle(
-                          isArabic: isArabic,
-                          fontSize: 12,
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                    const SizedBox(height: 2),
-                    Text(
-                      '${provider.actions.length} ${l10n.actions}',
-                      style: _getTextStyle(
-                        isArabic: isArabic,
-                        fontSize: 12,
+                      style: textTheme.bodySmall?.copyWith(
+                        fontSize: AppFontSize.sm,
                         color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
-                ),
+                  SizedBox(height: AppSpacing.xs),
+                  Text(
+                    '${provider.actions.length} ${l10n.actions}',
+                    style: textTheme.bodySmall?.copyWith(
+                      fontSize: AppFontSize.sm,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
               ),
+            ),
 
-              // Arrow
-              Icon(
-                Icons.arrow_forward_ios,
-                color: colorScheme.onSurfaceVariant,
-                size: 16,
-              ),
-            ],
-          ),
+            // Arrow
+            Icon(
+              Icons.arrow_forward_ios,
+              color: colorScheme.onSurfaceVariant,
+              size: AppIconSize.sm,
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildProviderImage(String? image, IconData icon, Color color) {
+  Widget _buildProviderImage(
+    String? image,
+    IconData icon,
+    Color color,
+    ColorScheme colorScheme,
+  ) {
     const double size = 44;
-    const double iconSize = 24;
+    const double iconSize = AppIconSize.xl;
 
     if (image != null && image.isNotEmpty) {
       final isSvg = image.toLowerCase().endsWith('.svg');
@@ -110,23 +112,23 @@ class ProviderListItem extends StatelessWidget {
         width: size,
         height: size,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Colors.white,
-          border: Border.all(color: Colors.grey.shade200, width: 1),
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          color: colorScheme.surface,
+          border: Border.all(color: colorScheme.outline, width: 1),
         ),
         clipBehavior: Clip.antiAlias,
         child: Padding(
-          padding: const EdgeInsets.all(4),
+          padding: EdgeInsets.all(AppSpacing.xs),
           child: _buildImageWidget(image, isSvg, icon, color, iconSize),
         ),
       );
     }
 
     return Container(
-      padding: const EdgeInsets.all(10),
+      padding: EdgeInsets.all(AppSpacing.sm),
       decoration: BoxDecoration(
         color: color.withAlpha(30),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(AppRadius.md),
       ),
       child: Icon(icon, color: color, size: iconSize),
     );
@@ -176,20 +178,6 @@ class ProviderListItem extends StatelessWidget {
   Widget _buildIconFallback(IconData icon, Color color, double size) {
     return Center(
       child: Icon(icon, color: color, size: size),
-    );
-  }
-
-  TextStyle _getTextStyle({
-    required bool isArabic,
-    required double fontSize,
-    FontWeight? fontWeight,
-    Color? color,
-  }) {
-    return TextStyle(
-      fontFamily: 'IBMPlexSansArabic',
-      fontSize: fontSize,
-      fontWeight: fontWeight,
-      color: color,
     );
   }
 }

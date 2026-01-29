@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sms/ui/theme/design_tokens.dart';
 
 /// Material 3 wrapper for Icon with consistent sizing and theme colors
 class XIcon extends StatelessWidget {
@@ -21,7 +22,7 @@ class XIcon extends StatelessWidget {
 
     return Icon(
       icon,
-      size: size ?? 24,
+      size: size ?? AppIconSize.xl,
       color: color ?? colorScheme.onSurface,
       semanticLabel: semanticLabel,
     );

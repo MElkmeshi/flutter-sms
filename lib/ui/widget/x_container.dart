@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sms/ui/theme/design_tokens.dart';
 
 /// Material 3 wrapper for Container with theme-aware colors and styling
 class XContainer extends StatelessWidget {
@@ -40,11 +41,11 @@ class XContainer extends StatelessWidget {
           (color != null
               ? BoxDecoration(
                   color: color,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
                 )
               : BoxDecoration(
                   color: colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
                 )),
       child: child,
     );

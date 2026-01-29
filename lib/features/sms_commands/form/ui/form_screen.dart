@@ -9,6 +9,7 @@ import 'package:sms/domain/model/action_item.dart';
 import 'package:sms/domain/model/service_provider.dart';
 import 'package:sms/features/sms_commands/form/logic/form_controller.dart';
 import 'package:sms/features/sms_commands/form/ui/dynamic_form_widget.dart';
+import 'package:sms/ui/theme/design_tokens.dart';
 
 @RoutePage()
 class FormScreen extends HookConsumerWidget {
@@ -33,10 +34,11 @@ class FormScreen extends HookConsumerWidget {
     final formState = ref.watch(FormController.provider(formParams));
 
     return XScaffold(
+      resizeToAvoidBottomInset: false,
       appBar: XAppBar(
         title: Text(
           title,
-          style: const TextStyle(fontWeight: .bold),
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -48,11 +50,11 @@ class FormScreen extends HookConsumerWidget {
           // Preview Section (SMS or USSD)
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(AppSpacing.lg),
               child: XCard(
                 child: Container(
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(AppRadius.lg),
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -63,7 +65,7 @@ class FormScreen extends HookConsumerWidget {
                     ),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(20),
+                    padding: EdgeInsets.all(AppSpacing.xl),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -72,9 +74,9 @@ class FormScreen extends HookConsumerWidget {
                             Icon(
                               action.type == ActionType.ussd ? Icons.phone : Icons.sms,
                               color: colorScheme.primary,
-                              size: 24,
+                              size: AppIconSize.xl,
                             ),
-                            const SizedBox(width: 8),
+                            SizedBox(width: AppSpacing.sm),
                             Text(
                               action.type == ActionType.ussd ? l10n.ussdPreview : l10n.smsPreview,
                               style: Theme.of(context)
@@ -87,12 +89,12 @@ class FormScreen extends HookConsumerWidget {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: AppSpacing.lg),
                         Container(
-                          padding: const EdgeInsets.all(12),
+                          padding: EdgeInsets.all(AppSpacing.md),
                           decoration: BoxDecoration(
                             color: colorScheme.surface,
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(AppRadius.md),
                             border: Border.all(
                               color: colorScheme.outline,
                               width: 1,
@@ -106,10 +108,10 @@ class FormScreen extends HookConsumerWidget {
                                   children: [
                                     Icon(
                                       Icons.phone,
-                                      size: 16,
+                                      size: AppIconSize.sm,
                                       color: colorScheme.onSurfaceVariant,
                                     ),
-                                    const SizedBox(width: 8),
+                                    SizedBox(width: AppSpacing.sm),
                                     Text(
                                       'To: ${action.smsNumber}',
                                       style: Theme.of(context)
@@ -122,7 +124,7 @@ class FormScreen extends HookConsumerWidget {
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 8),
+                                SizedBox(height: AppSpacing.sm),
                               ],
                               Text(
                                 formState.previewMessage,
@@ -148,13 +150,13 @@ class FormScreen extends HookConsumerWidget {
           // Form Section
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(AppSpacing.lg),
               child: Column(
-                crossAxisAlignment: .start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   XCard(
                     child: Padding(
-                      padding: const EdgeInsets.all(20),
+                      padding: EdgeInsets.all(AppSpacing.xl),
                       child: DynamicFormWidget(
                         fields: action.fields,
                         formParams: formParams,
@@ -178,20 +180,20 @@ class FormScreen extends HookConsumerWidget {
                                 SnackBar(
                                   content: Row(
                                     children: [
-                                      const Icon(
+                                      Icon(
                                         Icons.check_circle,
-                                        color: Colors.white,
+                                        color: colorScheme.onPrimary,
                                       ),
-                                      const SizedBox(width: 8),
+                                      SizedBox(width: AppSpacing.sm),
                                       Text(action.type == ActionType.ussd
                                           ? l10n.ussdDialerOpenedSuccess
                                           : l10n.smsAppOpenedSuccess),
                                     ],
                                   ),
                                   backgroundColor: colorScheme.primary,
-                                  behavior: .floating,
+                                  behavior: SnackBarBehavior.floating,
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
+                                    borderRadius: BorderRadius.circular(AppRadius.md),
                                   ),
                                 ),
                               );
@@ -200,20 +202,20 @@ class FormScreen extends HookConsumerWidget {
                                 SnackBar(
                                   content: Row(
                                     children: [
-                                      const Icon(
+                                      Icon(
                                         Icons.error,
-                                        color: Colors.white,
+                                        color: colorScheme.onError,
                                       ),
-                                      const SizedBox(width: 8),
+                                      SizedBox(width: AppSpacing.sm),
                                       Text(action.type == ActionType.ussd
                                           ? l10n.ussdDialerFailed
                                           : l10n.smsAppFailed),
                                     ],
                                   ),
                                   backgroundColor: colorScheme.error,
-                                  behavior: .floating,
+                                  behavior: SnackBarBehavior.floating,
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
+                                    borderRadius: BorderRadius.circular(AppRadius.md),
                                   ),
                                 ),
                               );
@@ -227,7 +229,11 @@ class FormScreen extends HookConsumerWidget {
               ),
             ),
           ),
-          const SliverToBoxAdapter(child: SizedBox(height: 24)),
+          SliverToBoxAdapter(
+            child: SizedBox(
+              height: AppSpacing.xxl + MediaQuery.of(context).viewInsets.bottom,
+            ),
+          ),
         ],
       ),
     );

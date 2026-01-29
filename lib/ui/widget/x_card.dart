@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sms/ui/theme/design_tokens.dart';
 
 /// Material 3 wrapper for Card with consistent elevation and shape
 class XCard extends StatelessWidget {
@@ -31,7 +32,7 @@ class XCard extends StatelessWidget {
       margin: margin,
       shape: shape ??
           RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.md),
           ),
       clipBehavior: clipBehavior ?? Clip.antiAlias,
       child: child,
@@ -40,7 +41,7 @@ class XCard extends StatelessWidget {
     if (onTap != null) {
       return InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.md),
         child: card,
       );
     }
