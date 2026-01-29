@@ -32,7 +32,7 @@ class SavedValuesBottomSheet extends HookConsumerWidget {
       builder: (context, scrollController) {
         return Container(
           decoration: BoxDecoration(
-            color: colorScheme.surface,
+            color: colorScheme.surfaceContainerLow,
             borderRadius: BorderRadius.vertical(
               top: Radius.circular(AppRadius.xl),
             ),

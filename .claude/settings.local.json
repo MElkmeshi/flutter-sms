@@ -38,7 +38,10 @@
       "Bash(flutter gen-l10n:*)",
       "Bash(flutter build:*)",
       "Bash(ls:*)",
-      "Bash(flutter pub run:*)"
+      "Bash(flutter pub run:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push)"
     ]
   }
 }

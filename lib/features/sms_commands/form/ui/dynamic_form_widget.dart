@@ -64,47 +64,53 @@ class DynamicFormWidget extends HookConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Form Header with Clear Button
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                l10n.formFields,
-                style: textTheme.titleMedium?.copyWith(
-                  fontSize: AppFontSize.xl,
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.onSurface,
-                ),
+          // Form Header with Clear Button - only show if there are fields
+          if (fields.isNotEmpty) ...[
+            SizedBox(
+              height: 40, // Fixed height to prevent layout shift
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    l10n.formFields,
+                    style: textTheme.titleMedium?.copyWith(
+                      fontSize: AppFontSize.xl,
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.onSurface,
+                    ),
+                  ),
+                  if (hasValuesToClear)
+                    TextButton.icon(
+                      onPressed: () {
+                        // Clear all controllers
+                        for (final controller in controllers.values) {
+                          controller.clear();
+                        }
+                        // Clear form values in controller
+                        ref.read(FormController.provider(formParams).notifier).clearForm();
+                      },
+                      icon: Icon(Icons.clear, size: AppIconSize.sm),
+                      label: Text(
+                        l10n.clearAll,
+                        style: textTheme.bodySmall?.copyWith(
+                          fontSize: AppFontSize.sm,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      style: TextButton.styleFrom(
+                        foregroundColor: colorScheme.error,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: AppSpacing.md,
+                          vertical: AppSpacing.sm,
+                        ),
+                      ),
+                    ),
+                ],
               ),
-              if (hasValuesToClear)
-                TextButton.icon(
-                  onPressed: () {
-                    // Clear all controllers
-                    for (final controller in controllers.values) {
-                      controller.clear();
-                    }
-                    // Clear form values in controller
-                    ref.read(FormController.provider(formParams).notifier).clearForm();
-                  },
-                  icon: Icon(Icons.clear, size: AppIconSize.sm),
-                  label: Text(
-                    l10n.clearAll,
-                    style: textTheme.bodySmall?.copyWith(
-                      fontSize: AppFontSize.sm,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  style: TextButton.styleFrom(
-                    foregroundColor: colorScheme.error,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: AppSpacing.md,
-                      vertical: AppSpacing.sm,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-          SizedBox(height: AppSpacing.lg),
+            ),
+            SizedBox(height: AppSpacing.lg),
+          ],
 
           // Form fields
           ...fields.map((field) {
@@ -180,50 +186,54 @@ class DynamicFormWidget extends HookConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Field label with saved indicator
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                label,
-                style: textTheme.bodyMedium?.copyWith(
-                  fontSize: AppFontSize.md,
-                  fontWeight: FontWeight.w600,
-                  color: colorScheme.onSurface,
+        SizedBox(
+          height: 24, // Fixed height to prevent layout shift
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Text(
+                  label,
+                  style: textTheme.bodyMedium?.copyWith(
+                    fontSize: AppFontSize.md,
+                    fontWeight: FontWeight.w600,
+                    color: colorScheme.onSurface,
+                  ),
                 ),
               ),
-            ),
-            if (hasSavedValue)
-              Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: AppSpacing.sm,
-                  vertical: AppSpacing.xs / 2,
-                ),
-                decoration: BoxDecoration(
-                  color: colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(AppRadius.sm),
-                  border: Border.all(color: colorScheme.primary),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.check_circle,
-                      size: AppIconSize.xs,
-                      color: colorScheme.primary,
-                    ),
-                    SizedBox(width: AppSpacing.xs),
-                    Text(
-                      l10n.saved,
-                      style: textTheme.bodySmall?.copyWith(
-                        fontSize: AppFontSize.xs,
-                        fontWeight: FontWeight.w600,
+              if (hasSavedValue)
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: AppSpacing.sm,
+                    vertical: AppSpacing.xs / 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
+                    border: Border.all(color: colorScheme.primary),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.check_circle,
+                        size: AppIconSize.xs,
                         color: colorScheme.primary,
                       ),
-                    ),
-                  ],
+                      SizedBox(width: AppSpacing.xs),
+                      Text(
+                        l10n.saved,
+                        style: textTheme.bodySmall?.copyWith(
+                          fontSize: AppFontSize.xs,
+                          fontWeight: FontWeight.w600,
+                          color: colorScheme.primary,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
         SizedBox(height: AppSpacing.sm),
 
@@ -418,9 +428,6 @@ class DynamicFormWidget extends HookConsumerWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
-      ),
       builder: (_) => SavedValuesBottomSheet(
         fieldId: field.id,
         fieldLabel: label,
