@@ -264,96 +264,16 @@ class DynamicFormWidget extends HookConsumerWidget {
   ) {
     switch (field.type) {
       case 'text':
-        final savedValues = ref.watch(SavedValuesController.provider(field.id));
-
-        return Autocomplete<SavedFieldValue>(
-          optionsBuilder: (textEditingValue) {
-            if (textEditingValue.text.isEmpty) {
-              return const Iterable<SavedFieldValue>.empty();
-            }
-            return savedValues.where((item) =>
-              item.value.toLowerCase().contains(textEditingValue.text.toLowerCase())
-            );
-          },
-          displayStringForOption: (option) => option.value,
-          onSelected: (selection) {
-            controllers[field.id]!.text = selection.value;
-            ref
-                .read(FormController.provider(formParams).notifier)
-                .updateField(field.id, selection.value);
-          },
-          optionsViewBuilder: (context, onSelected, options) {
-            return Align(
-              alignment: AlignmentDirectional.topStart,
-              child: Material(
-                elevation: 4,
-                borderRadius: BorderRadius.circular(AppRadius.sm),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxHeight: 200, maxWidth: 300),
-                  child: ListView.builder(
-                    padding: EdgeInsets.zero,
-                    shrinkWrap: true,
-                    itemCount: options.length,
-                    itemBuilder: (context, index) {
-                      final option = options.elementAt(index);
-                      return ListTile(
-                        dense: true,
-                        title: Text(option.value),
-                        subtitle: Text(
-                          option.name,
-                          style: TextStyle(
-                            fontSize: AppFontSize.sm,
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                        onTap: () => onSelected(option),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            );
-          },
-          fieldViewBuilder: (context, textController, focusNode, onFieldSubmitted) {
-            // Sync the autocomplete controller with our controller
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (controllers[field.id]!.text != textController.text) {
-                textController.text = controllers[field.id]!.text;
-              }
-            });
-
-            return TextFormField(
-              controller: textController,
-              focusNode: focusNode,
-              enableInteractiveSelection: true,
-              canRequestFocus: true,
-              decoration: InputDecoration(
-                hintText: l10n.enterField(label),
-                prefixIcon: Icon(
-                  _getFieldIcon(field.id),
-                  color: colorScheme.onSurfaceVariant,
-                ),
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.bookmark_border, size: AppIconSize.lg, color: colorScheme.primary),
-                  onPressed: () => _handleBookmarkPressed(
-                    context, ref, field, label, controllers[field.id]!,
-                  ),
-                ),
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return l10n.fieldRequired(label);
-                }
-                return null;
-              },
-              onChanged: (value) {
-                controllers[field.id]!.text = value;
-                ref
-                    .read(FormController.provider(formParams).notifier)
-                    .updateField(field.id, value);
-              },
-            );
-          },
+        return _TextFieldWithDropdown(
+          field: field,
+          label: label,
+          controller: controllers[field.id]!,
+          formParams: formParams,
+          l10n: l10n,
+          colorScheme: colorScheme,
+          onBookmarkPressed: () => _handleBookmarkPressed(
+            context, ref, field, label, controllers[field.id]!,
+          ),
         );
 
       case 'dropdown':
@@ -407,12 +327,15 @@ class DynamicFormWidget extends HookConsumerWidget {
     TextEditingController textController,
   ) {
     final currentValue = textController.text.trim();
+    final savedValues = ref.read(SavedValuesController.provider(field.id));
+    final isValueNew = currentValue.isNotEmpty &&
+        !savedValues.any((saved) => saved.value == currentValue);
 
-    if (currentValue.isNotEmpty) {
-      // Field has value - show save dialog with name autocomplete
-      _showSaveNameDialog(context, ref, field, label, currentValue);
+    if (isValueNew) {
+      // Show save dialog for new value
+      _showSaveNewValueDialog(context, ref, field, label, currentValue);
     } else {
-      // Field is empty - show saved values to select from
+      // Show saved values management sheet
       _showSavedValuesSheet(context, ref, field, label, textController);
     }
   }
@@ -441,7 +364,7 @@ class DynamicFormWidget extends HookConsumerWidget {
     );
   }
 
-  void _showSaveNameDialog(
+  void _showSaveNewValueDialog(
     BuildContext context,
     WidgetRef ref,
     InputField field,
@@ -532,6 +455,297 @@ class DynamicFormWidget extends HookConsumerWidget {
             child: Text(l10n.ok),
           ),
         ],
+      ),
+    );
+  }
+
+  IconData _getFieldIcon(String fieldId) {
+    if (fieldId.contains('account')) {
+      return Icons.account_balance;
+    } else if (fieldId.contains('pin')) {
+      return Icons.lock;
+    } else if (fieldId.contains('amount')) {
+      return Icons.attach_money;
+    } else if (fieldId.contains('phone')) {
+      return Icons.phone;
+    } else {
+      return Icons.edit;
+    }
+  }
+}
+
+/// Text field with saved values dropdown on focus
+class _TextFieldWithDropdown extends HookConsumerWidget {
+  const _TextFieldWithDropdown({
+    required this.field,
+    required this.label,
+    required this.controller,
+    required this.formParams,
+    required this.l10n,
+    required this.colorScheme,
+    required this.onBookmarkPressed,
+  });
+
+  final InputField field;
+  final String label;
+  final TextEditingController controller;
+  final FormParams formParams;
+  final AppLocalizations l10n;
+  final ColorScheme colorScheme;
+  final VoidCallback onBookmarkPressed;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final focusNode = useFocusNode();
+    final dropdownKey = useMemoized(() => GlobalKey());
+    final showDropdown = useState(false);
+    final currentText = useState(controller.text);
+
+    // Listen to focus changes
+    useEffect(() {
+      void listener() {
+        showDropdown.value = focusNode.hasFocus;
+      }
+      focusNode.addListener(listener);
+      return () => focusNode.removeListener(listener);
+    }, [focusNode]);
+
+    // Listen to text changes
+    useEffect(() {
+      void listener() {
+        currentText.value = controller.text;
+      }
+      controller.addListener(listener);
+      return () => controller.removeListener(listener);
+    }, [controller]);
+
+    // Determine if current value is new (not saved)
+    final savedValues = ref.watch(SavedValuesController.provider(field.id));
+    final currentValue = controller.text.trim();
+    final isValueNew = currentValue.isNotEmpty &&
+        !savedValues.any((saved) => saved.value == currentValue);
+
+    return Stack(
+      children: [
+        TextFormField(
+          key: dropdownKey,
+          controller: controller,
+          focusNode: focusNode,
+          enableInteractiveSelection: true,
+          canRequestFocus: true,
+          decoration: InputDecoration(
+            hintText: l10n.enterField(label),
+            prefixIcon: Icon(
+              _getFieldIcon(field.id),
+              color: colorScheme.onSurfaceVariant,
+            ),
+            suffixIcon: IconButton(
+              icon: Icon(
+                isValueNew ? Icons.add : Icons.bookmark_border,
+                size: AppIconSize.lg,
+                color: colorScheme.primary,
+              ),
+              onPressed: onBookmarkPressed,
+            ),
+          ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return l10n.fieldRequired(label);
+            }
+            return null;
+          },
+          onChanged: (value) {
+            ref
+                .read(FormController.provider(formParams).notifier)
+                .updateField(field.id, value);
+          },
+        ),
+        if (showDropdown.value)
+          Positioned(
+            left: 0,
+            right: 0,
+            top: 60, // Approximate height of text field
+            child: _buildDropdownContent(
+              context,
+              ref,
+              currentText.value,
+              (value) {
+                controller.text = value.value;
+                ref
+                    .read(FormController.provider(formParams).notifier)
+                    .updateField(field.id, value.value);
+                // Update usage tracking
+                final savedValues = ref.read(SavedValuesController.provider(field.id));
+                final index = savedValues.indexOf(value);
+                if (index >= 0) {
+                  ref
+                      .read(SavedValuesController.provider(field.id).notifier)
+                      .updateUsage(index);
+                }
+                focusNode.unfocus();
+              },
+              () {
+                focusNode.unfocus();
+                onBookmarkPressed();
+              },
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildDropdownContent(
+    BuildContext context,
+    WidgetRef ref,
+    String searchText,
+    ValueChanged<SavedFieldValue> onValueSelected,
+    VoidCallback onManageValues,
+  ) {
+    // Watch saved values to make dropdown reactive to state changes
+    ref.watch(SavedValuesController.provider(field.id));
+    final savedValuesNotifier = ref.read(SavedValuesController.provider(field.id).notifier);
+    final filteredValues = savedValuesNotifier.searchValues(searchText);
+    final textTheme = Theme.of(context).textTheme;
+
+    return Material(
+      elevation: 8,
+      borderRadius: BorderRadius.circular(AppRadius.md),
+      child: Container(
+        constraints: const BoxConstraints(maxHeight: 300),
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          border: Border.all(color: colorScheme.outline.withValues(alpha: 0.3)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Values list
+            if (filteredValues.isNotEmpty) ...[
+              Flexible(
+                child: ListView.builder(
+                  padding: EdgeInsets.symmetric(vertical: AppSpacing.xs),
+                  shrinkWrap: true,
+                  itemCount: filteredValues.length,
+                  itemBuilder: (context, index) {
+                    final value = filteredValues[index];
+                    return InkWell(
+                      onTap: () => onValueSelected(value),
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: AppSpacing.md,
+                          vertical: AppSpacing.sm,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.bookmark,
+                                  size: AppIconSize.sm,
+                                  color: colorScheme.primary,
+                                ),
+                                SizedBox(width: AppSpacing.sm),
+                                Expanded(
+                                  child: Text(
+                                    value.name,
+                                    style: textTheme.bodyMedium?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      color: colorScheme.onSurface,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                if (value.usageCount > 0)
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: AppSpacing.xs,
+                                      vertical: 2,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: colorScheme.primaryContainer,
+                                      borderRadius: BorderRadius.circular(AppRadius.sm / 2),
+                                    ),
+                                    child: Text(
+                                      '${value.usageCount}',
+                                      style: textTheme.bodySmall?.copyWith(
+                                        fontSize: AppFontSize.xs,
+                                        color: colorScheme.primary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            SizedBox(height: AppSpacing.xs / 2),
+                            Padding(
+                              padding: EdgeInsets.only(left: AppIconSize.sm + AppSpacing.sm),
+                              child: Text(
+                                value.value,
+                                style: textTheme.bodySmall?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              Divider(height: 1, color: colorScheme.outline.withValues(alpha: 0.2)),
+            ] else if (searchText.isEmpty) ...[
+              Padding(
+                padding: EdgeInsets.all(AppSpacing.md),
+                child: Center(
+                  child: Text(
+                    l10n.noSavedValues,
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+              ),
+              Divider(height: 1, color: colorScheme.outline.withValues(alpha: 0.2)),
+            ],
+
+            // Footer: Manage button
+            Padding(
+              padding: EdgeInsets.all(AppSpacing.xs),
+              child: InkWell(
+                onTap: onManageValues,
+                borderRadius: BorderRadius.circular(AppRadius.sm),
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: AppSpacing.sm,
+                    vertical: AppSpacing.sm,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.settings,
+                        size: AppIconSize.sm,
+                        color: colorScheme.primary,
+                      ),
+                      SizedBox(width: AppSpacing.sm),
+                      Text(
+                        l10n.manageSavedValues,
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

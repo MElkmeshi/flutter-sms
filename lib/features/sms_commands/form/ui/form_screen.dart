@@ -7,7 +7,11 @@ import 'package:sms/ui/widget/x_app_bar.dart';
 import 'package:sms/ui/widget/x_card.dart';
 import 'package:sms/domain/model/action_item.dart';
 import 'package:sms/domain/model/service_provider.dart';
+import 'package:sms/domain/model/input_field.dart';
 import 'package:sms/features/sms_commands/form/logic/form_controller.dart';
+import 'package:sms/features/sms_commands/form/logic/form_state.dart' as form_logic;
+import 'package:sms/features/sms_commands/form/logic/saved_values_controller.dart';
+import 'package:sms/features/sms_commands/form/models/saved_field_value.dart';
 import 'package:sms/features/sms_commands/form/ui/dynamic_form_widget.dart';
 import 'package:sms/ui/theme/design_tokens.dart';
 
@@ -197,6 +201,16 @@ class FormScreen extends HookConsumerWidget {
                                   ),
                                 ),
                               );
+
+                              // Show auto-save prompt for new values
+                              _showAutoSavePrompt(
+                                context,
+                                ref,
+                                formState,
+                                action,
+                                l10n,
+                                colorScheme,
+                              );
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
@@ -237,5 +251,156 @@ class FormScreen extends HookConsumerWidget {
         ],
       ),
     );
+  }
+
+  void _showAutoSavePrompt(
+    BuildContext context,
+    WidgetRef ref,
+    form_logic.FormState formState,
+    ActionItem action,
+    AppLocalizations l10n,
+    ColorScheme colorScheme,
+  ) {
+    // Only process text fields with non-empty values
+    final fieldsToSave = <InputField>[];
+
+    for (final field in action.fields) {
+      if (field.type != 'text') continue;
+
+      final value = formState.formValues[field.id];
+      if (value == null || value.trim().isEmpty) continue;
+
+      // Check if this value already exists in saved values
+      final savedValues = ref.read(SavedValuesController.provider(field.id));
+      final alreadyExists = savedValues.any((saved) => saved.value == value);
+
+      if (!alreadyExists) {
+        fieldsToSave.add(field);
+      }
+    }
+
+    // If no new values to save, return
+    if (fieldsToSave.isEmpty) return;
+
+    // Show auto-save prompt for each field with delay between prompts
+    Future.delayed(const Duration(milliseconds: 1500), () {
+      if (context.mounted) {
+        _showAutoSavePromptForField(
+          context,
+          ref,
+          formState,
+          fieldsToSave,
+          0,
+          l10n,
+          colorScheme,
+        );
+      }
+    });
+  }
+
+  void _showAutoSavePromptForField(
+    BuildContext context,
+    WidgetRef ref,
+    form_logic.FormState formState,
+    List<InputField> fieldsToSave,
+    int currentIndex,
+    AppLocalizations l10n,
+    ColorScheme colorScheme,
+  ) {
+    if (currentIndex >= fieldsToSave.length || !context.mounted) return;
+
+    final field = fieldsToSave[currentIndex];
+    final value = formState.formValues[field.id]!;
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final fieldLabel = isArabic ? field.labelAr : field.labelEn;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n.saveValuePrompt(fieldLabel)),
+        duration: const Duration(seconds: 4),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: colorScheme.surfaceContainerHigh,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          side: BorderSide(color: colorScheme.primary, width: 1),
+        ),
+        action: SnackBarAction(
+          label: l10n.save,
+          textColor: colorScheme.primary,
+          onPressed: () {
+            // Auto-generate name with timestamp
+            final now = DateTime.now();
+            final timeStr = '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
+            final dateStr = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+            final autoName = '$fieldLabel - $dateStr $timeStr';
+
+            // Save the value
+            ref.read(SavedValuesController.provider(field.id).notifier).addValue(
+              SavedFieldValue(
+                name: autoName,
+                value: value,
+                lastUsed: now,
+                usageCount: 1,
+              ),
+            );
+
+            // Show confirmation
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Row(
+                    children: [
+                      Icon(Icons.check_circle, color: colorScheme.onPrimary),
+                      SizedBox(width: AppSpacing.sm),
+                      Expanded(child: Text(l10n.valueSaved)),
+                    ],
+                  ),
+                  duration: const Duration(seconds: 2),
+                  backgroundColor: colorScheme.primary,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppRadius.md),
+                  ),
+                ),
+              );
+            }
+
+            // Show next prompt after a delay
+            if (currentIndex + 1 < fieldsToSave.length) {
+              Future.delayed(const Duration(milliseconds: 500), () {
+                if (context.mounted) {
+                  _showAutoSavePromptForField(
+                    context,
+                    ref,
+                    formState,
+                    fieldsToSave,
+                    currentIndex + 1,
+                    l10n,
+                    colorScheme,
+                  );
+                }
+              });
+            }
+          },
+        ),
+      ),
+    ).closed.then((_) {
+      // If user dismissed without saving, show next prompt
+      if (currentIndex + 1 < fieldsToSave.length && context.mounted) {
+        Future.delayed(const Duration(milliseconds: 300), () {
+          if (context.mounted) {
+            _showAutoSavePromptForField(
+              context,
+              ref,
+              formState,
+              fieldsToSave,
+              currentIndex + 1,
+              l10n,
+              colorScheme,
+            );
+          }
+        });
+      }
+    });
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sms/l10n/app_localizations.dart';
 import 'package:sms/features/sms_commands/form/logic/saved_values_controller.dart';
@@ -22,7 +23,13 @@ class SavedValuesBottomSheet extends HookConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final savedValues = ref.watch(SavedValuesController.provider(fieldId));
+    final searchController = useTextEditingController();
+    final searchQuery = useState('');
+
+    final savedValuesNotifier = ref.read(SavedValuesController.provider(fieldId).notifier);
+    final filteredValues = searchQuery.value.isEmpty
+        ? savedValuesNotifier.getSortedValues()
+        : savedValuesNotifier.searchValues(searchQuery.value);
 
     return DraggableScrollableSheet(
       initialChildSize: 0.5,
@@ -65,12 +72,47 @@ class SavedValuesBottomSheet extends HookConsumerWidget {
                 ),
               ),
               SizedBox(height: AppSpacing.lg),
+
+              // Search bar (only show if there are saved values)
+              if (ref.watch(SavedValuesController.provider(fieldId)).isNotEmpty) ...[
+                TextField(
+                  controller: searchController,
+                  decoration: InputDecoration(
+                    hintText: l10n.search,
+                    prefixIcon: Icon(Icons.search, color: colorScheme.onSurfaceVariant),
+                    suffixIcon: searchQuery.value.isNotEmpty
+                        ? IconButton(
+                            icon: Icon(Icons.clear, color: colorScheme.onSurfaceVariant),
+                            onPressed: () {
+                              searchController.clear();
+                              searchQuery.value = '';
+                            },
+                          )
+                        : null,
+                    filled: true,
+                    fillColor: colorScheme.surfaceContainerHighest,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md,
+                      vertical: AppSpacing.sm,
+                    ),
+                  ),
+                  onChanged: (value) {
+                    searchQuery.value = value;
+                  },
+                ),
+                SizedBox(height: AppSpacing.md),
+              ],
+
               // List or empty state
               Expanded(
-                child: savedValues.isEmpty
-                    ? _buildEmptyState(context, l10n, colorScheme, textTheme)
+                child: filteredValues.isEmpty
+                    ? _buildEmptyState(context, l10n, colorScheme, textTheme, searchQuery.value.isNotEmpty)
                     : _buildValuesList(
-                        context, ref, savedValues, colorScheme, l10n, scrollController, textTheme),
+                        context, ref, filteredValues, colorScheme, l10n, scrollController, textTheme),
               ),
               // Add new value button
               SizedBox(height: AppSpacing.sm),
@@ -104,19 +146,20 @@ class SavedValuesBottomSheet extends HookConsumerWidget {
     AppLocalizations l10n,
     ColorScheme colorScheme,
     TextTheme textTheme,
+    bool isSearching,
   ) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.bookmark_border,
+            isSearching ? Icons.search_off : Icons.bookmark_border,
             size: AppIconSize.xxl,
             color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
           ),
           SizedBox(height: AppSpacing.md),
           Text(
-            l10n.noSavedValues,
+            isSearching ? l10n.noSearchResults : l10n.noSavedValues,
             style: textTheme.titleMedium?.copyWith(
               fontSize: AppFontSize.xl,
               fontWeight: FontWeight.w600,
@@ -125,7 +168,7 @@ class SavedValuesBottomSheet extends HookConsumerWidget {
           ),
           SizedBox(height: AppSpacing.xs),
           Text(
-            l10n.noSavedValuesHint,
+            isSearching ? l10n.tryDifferentSearch : l10n.noSavedValuesHint,
             textAlign: TextAlign.center,
             style: textTheme.bodySmall?.copyWith(
               fontSize: AppFontSize.sm + 1,
@@ -146,12 +189,16 @@ class SavedValuesBottomSheet extends HookConsumerWidget {
     ScrollController scrollController,
     TextTheme textTheme,
   ) {
+    final allValues = ref.watch(SavedValuesController.provider(fieldId));
+
     return ListView.separated(
       controller: scrollController,
       itemCount: values.length,
       separatorBuilder: (_, _) => SizedBox(height: AppSpacing.sm),
       itemBuilder: (context, index) {
         final item = values[index];
+        final originalIndex = allValues.indexOf(item);
+
         return Card(
           elevation: 0,
           color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
@@ -160,6 +207,11 @@ class SavedValuesBottomSheet extends HookConsumerWidget {
           ),
           child: ListTile(
             onTap: () {
+              if (originalIndex >= 0) {
+                ref
+                    .read(SavedValuesController.provider(fieldId).notifier)
+                    .updateUsage(originalIndex);
+              }
               onValueSelected(item.value);
               Navigator.of(context).pop();
             },
@@ -171,12 +223,37 @@ class SavedValuesBottomSheet extends HookConsumerWidget {
                 size: AppIconSize.md,
               ),
             ),
-            title: Text(
-              item.name,
-              style: textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: colorScheme.onSurface,
-              ),
+            title: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    item.name,
+                    style: textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: colorScheme.onSurface,
+                    ),
+                  ),
+                ),
+                if (item.usageCount > 0)
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: AppSpacing.xs,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(AppRadius.sm / 2),
+                    ),
+                    child: Text(
+                      '${item.usageCount}',
+                      style: textTheme.bodySmall?.copyWith(
+                        fontSize: AppFontSize.xs,
+                        color: colorScheme.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+              ],
             ),
             subtitle: Text(
               item.value,
@@ -185,13 +262,26 @@ class SavedValuesBottomSheet extends HookConsumerWidget {
                 color: colorScheme.onSurfaceVariant,
               ),
             ),
-            trailing: IconButton(
-              icon: Icon(
-                Icons.delete_outline,
-                color: colorScheme.error,
-                size: AppIconSize.lg,
-              ),
-              onPressed: () => _confirmDelete(context, ref, index, l10n, colorScheme),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: Icon(
+                    Icons.edit_outlined,
+                    color: colorScheme.primary,
+                    size: AppIconSize.lg,
+                  ),
+                  onPressed: () => _showEditDialog(context, ref, originalIndex, item, l10n, colorScheme),
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.delete_outline,
+                    color: colorScheme.error,
+                    size: AppIconSize.lg,
+                  ),
+                  onPressed: () => _confirmDelete(context, ref, originalIndex, l10n, colorScheme),
+                ),
+              ],
             ),
           ),
         );
@@ -223,6 +313,59 @@ class SavedValuesBottomSheet extends HookConsumerWidget {
               Navigator.of(ctx).pop();
             },
             style: TextButton.styleFrom(foregroundColor: colorScheme.error),
+            child: Text(l10n.ok),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEditDialog(
+    BuildContext context,
+    WidgetRef ref,
+    int index,
+    SavedFieldValue currentValue,
+    AppLocalizations l10n,
+    ColorScheme colorScheme,
+  ) {
+    final nameController = TextEditingController(text: currentValue.name);
+    final formKey = GlobalKey<FormState>();
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.editValueName),
+        content: Form(
+          key: formKey,
+          child: TextFormField(
+            controller: nameController,
+            autofocus: true,
+            decoration: InputDecoration(
+              labelText: l10n.valueName,
+              hintText: l10n.valueNameHint,
+            ),
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return l10n.valueNameRequired;
+              }
+              return null;
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l10n.goBack),
+          ),
+          FilledButton(
+            onPressed: () {
+              if (formKey.currentState!.validate()) {
+                ref
+                    .read(SavedValuesController.provider(fieldId).notifier)
+                    .updateValueName(index, nameController.text.trim());
+                Navigator.of(ctx).pop();
+              }
+            },
             child: Text(l10n.ok),
           ),
         ],

@@ -59,5 +59,21 @@
   "dialUssd": "Dial USSD",
   "ussdPreview": "USSD Preview",
   "ussdDialerOpenedSuccess": "USSD dialer opened successfully!",
-  "ussdDialerFailed": "Failed to open USSD dialer"
+  "ussdDialerFailed": "Failed to open USSD dialer",
+  "search": "Search",
+  "noSearchResults": "No results found",
+  "tryDifferentSearch": "Try a different search term",
+  "manageSavedValues": "Manage saved values",
+  "editValueName": "Edit Value Name",
+  "save": "Save",
+  "valueSaved": "Value saved successfully",
+  "saveValuePrompt": "Save {field} for next time?",
+  "@saveValuePrompt": {
+    "description": "Auto-save prompt after successful send",
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -358,6 +358,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to open USSD dialer'**
   String get ussdDialerFailed;
+
+  /// No description provided for @search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get search;
+
+  /// No description provided for @noSearchResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No results found'**
+  String get noSearchResults;
+
+  /// No description provided for @tryDifferentSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a different search term'**
+  String get tryDifferentSearch;
+
+  /// No description provided for @manageSavedValues.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage saved values'**
+  String get manageSavedValues;
+
+  /// No description provided for @editValueName.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Value Name'**
+  String get editValueName;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @valueSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Value saved successfully'**
+  String get valueSaved;
+
+  /// Auto-save prompt after successful send
+  ///
+  /// In en, this message translates to:
+  /// **'Save {field} for next time?'**
+  String saveValuePrompt(String field);
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

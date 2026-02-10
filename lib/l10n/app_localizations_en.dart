@@ -143,4 +143,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ussdDialerFailed => 'Failed to open USSD dialer';
+
+  @override
+  String get search => 'Search';
+
+  @override
+  String get noSearchResults => 'No results found';
+
+  @override
+  String get tryDifferentSearch => 'Try a different search term';
+
+  @override
+  String get manageSavedValues => 'Manage saved values';
+
+  @override
+  String get editValueName => 'Edit Value Name';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get valueSaved => 'Value saved successfully';
+
+  @override
+  String saveValuePrompt(String field) {
+    return 'Save $field for next time?';
+  }
 }

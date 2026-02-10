@@ -59,5 +59,21 @@
   "dialUssd": "طلب USSD",
   "ussdPreview": "معاينة كود USSD",
   "ussdDialerOpenedSuccess": "تم فتح طالب USSD بنجاح!",
-  "ussdDialerFailed": "فشل في فتح طالب USSD"
+  "ussdDialerFailed": "فشل في فتح طالب USSD",
+  "search": "بحث",
+  "noSearchResults": "لا توجد نتائج",
+  "tryDifferentSearch": "جرب كلمة بحث مختلفة",
+  "manageSavedValues": "إدارة القيم المحفوظة",
+  "editValueName": "تعديل اسم القيمة",
+  "save": "حفظ",
+  "valueSaved": "تم حفظ القيمة بنجاح",
+  "saveValuePrompt": "حفظ {field} للمرة القادمة؟",
+  "@saveValuePrompt": {
+    "description": "Auto-save prompt after successful send",
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -143,4 +143,30 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get ussdDialerFailed => 'فشل في فتح طالب USSD';
+
+  @override
+  String get search => 'بحث';
+
+  @override
+  String get noSearchResults => 'لا توجد نتائج';
+
+  @override
+  String get tryDifferentSearch => 'جرب كلمة بحث مختلفة';
+
+  @override
+  String get manageSavedValues => 'إدارة القيم المحفوظة';
+
+  @override
+  String get editValueName => 'تعديل اسم القيمة';
+
+  @override
+  String get save => 'حفظ';
+
+  @override
+  String get valueSaved => 'تم حفظ القيمة بنجاح';
+
+  @override
+  String saveValuePrompt(String field) {
+    return 'حفظ $field للمرة القادمة؟';
+  }
 }
