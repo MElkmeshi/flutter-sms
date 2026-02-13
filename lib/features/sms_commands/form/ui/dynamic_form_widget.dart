@@ -474,7 +474,9 @@ class DynamicFormWidget extends HookConsumerWidget {
   }
 }
 
-/// Text field with saved values dropdown on focus
+/// Text field with saved values dropdown on focus.
+/// Uses CompositedTransformTarget/Follower + Overlay so the dropdown
+/// renders above all other content and updates as the user types.
 class _TextFieldWithDropdown extends HookConsumerWidget {
   const _TextFieldWithDropdown({
     required this.field,
@@ -497,257 +499,319 @@ class _TextFieldWithDropdown extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final focusNode = useFocusNode();
-    final dropdownKey = useMemoized(() => GlobalKey());
-    final showDropdown = useState(false);
+    final layerLink = useMemoized(() => LayerLink());
+    final overlayEntry = useRef<OverlayEntry?>(null);
     final currentText = useState(controller.text);
 
-    // Listen to focus changes
+    // Helper to rebuild the overlay when text or saved values change
+    void updateOverlay() {
+      overlayEntry.value?.markNeedsBuild();
+    }
+
+    // Show/hide overlay on focus changes
     useEffect(() {
       void listener() {
-        showDropdown.value = focusNode.hasFocus;
+        if (focusNode.hasFocus) {
+          _showOverlay(context, ref, layerLink, overlayEntry, currentText, updateOverlay);
+        } else {
+          _hideOverlay(overlayEntry);
+        }
       }
       focusNode.addListener(listener);
-      return () => focusNode.removeListener(listener);
+      return () {
+        focusNode.removeListener(listener);
+        _hideOverlay(overlayEntry);
+      };
     }, [focusNode]);
 
-    // Listen to text changes
+    // Listen to text changes and update overlay
     useEffect(() {
       void listener() {
         currentText.value = controller.text;
+        updateOverlay();
       }
       controller.addListener(listener);
       return () => controller.removeListener(listener);
     }, [controller]);
 
-    // Determine if current value is new (not saved)
+    // Rebuild overlay when saved values change
     final savedValues = ref.watch(SavedValuesController.provider(field.id));
+    useEffect(() {
+      updateOverlay();
+      return null;
+    }, [savedValues]);
+
+    // Determine if current value is new (not saved)
     final currentValue = controller.text.trim();
     final isValueNew = currentValue.isNotEmpty &&
         !savedValues.any((saved) => saved.value == currentValue);
 
-    return Stack(
-      children: [
-        TextFormField(
-          key: dropdownKey,
-          controller: controller,
-          focusNode: focusNode,
-          enableInteractiveSelection: true,
-          canRequestFocus: true,
-          decoration: InputDecoration(
-            hintText: l10n.enterField(label),
-            prefixIcon: Icon(
-              _getFieldIcon(field.id),
-              color: colorScheme.onSurfaceVariant,
-            ),
-            suffixIcon: IconButton(
-              icon: Icon(
-                isValueNew ? Icons.add : Icons.bookmark_border,
-                size: AppIconSize.lg,
-                color: colorScheme.primary,
-              ),
-              onPressed: onBookmarkPressed,
-            ),
+    return CompositedTransformTarget(
+      link: layerLink,
+      child: TextFormField(
+        controller: controller,
+        focusNode: focusNode,
+        enableInteractiveSelection: true,
+        canRequestFocus: true,
+        decoration: InputDecoration(
+          hintText: l10n.enterField(label),
+          prefixIcon: Icon(
+            _getFieldIcon(field.id),
+            color: colorScheme.onSurfaceVariant,
           ),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return l10n.fieldRequired(label);
-            }
-            return null;
-          },
-          onChanged: (value) {
-            ref
-                .read(FormController.provider(formParams).notifier)
-                .updateField(field.id, value);
-          },
+          suffixIcon: IconButton(
+            icon: Icon(
+              isValueNew ? Icons.add : Icons.bookmark_border,
+              size: AppIconSize.lg,
+              color: colorScheme.primary,
+            ),
+            onPressed: onBookmarkPressed,
+          ),
         ),
-        if (showDropdown.value)
-          Positioned(
-            left: 0,
-            right: 0,
-            top: 60, // Approximate height of text field
-            child: _buildDropdownContent(
-              context,
-              ref,
-              currentText.value,
-              (value) {
-                controller.text = value.value;
-                ref
-                    .read(FormController.provider(formParams).notifier)
-                    .updateField(field.id, value.value);
-                // Update usage tracking
-                final savedValues = ref.read(SavedValuesController.provider(field.id));
-                final index = savedValues.indexOf(value);
-                if (index >= 0) {
-                  ref
-                      .read(SavedValuesController.provider(field.id).notifier)
-                      .updateUsage(index);
-                }
-                focusNode.unfocus();
-              },
-              () {
-                focusNode.unfocus();
-                onBookmarkPressed();
-              },
-            ),
-          ),
-      ],
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return l10n.fieldRequired(label);
+          }
+          return null;
+        },
+        onChanged: (value) {
+          ref
+              .read(FormController.provider(formParams).notifier)
+              .updateField(field.id, value);
+        },
+      ),
     );
   }
 
-  Widget _buildDropdownContent(
+  void _showOverlay(
     BuildContext context,
     WidgetRef ref,
-    String searchText,
-    ValueChanged<SavedFieldValue> onValueSelected,
-    VoidCallback onManageValues,
+    LayerLink layerLink,
+    ObjectRef<OverlayEntry?> overlayEntry,
+    ValueNotifier<String> currentText,
+    VoidCallback onUpdate,
   ) {
-    // Watch saved values to make dropdown reactive to state changes
-    ref.watch(SavedValuesController.provider(field.id));
-    final savedValuesNotifier = ref.read(SavedValuesController.provider(field.id).notifier);
-    final filteredValues = savedValuesNotifier.searchValues(searchText);
+    _hideOverlay(overlayEntry);
+
+    final overlay = Overlay.of(context);
     final textTheme = Theme.of(context).textTheme;
 
-    return Material(
-      elevation: 8,
-      borderRadius: BorderRadius.circular(AppRadius.md),
-      child: Container(
-        constraints: const BoxConstraints(maxHeight: 300),
-        decoration: BoxDecoration(
-          color: colorScheme.surface,
-          borderRadius: BorderRadius.circular(AppRadius.md),
-          border: Border.all(color: colorScheme.outline.withValues(alpha: 0.3)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Values list
-            if (filteredValues.isNotEmpty) ...[
-              Flexible(
-                child: ListView.builder(
-                  padding: EdgeInsets.symmetric(vertical: AppSpacing.xs),
-                  shrinkWrap: true,
-                  itemCount: filteredValues.length,
-                  itemBuilder: (context, index) {
-                    final value = filteredValues[index];
-                    return InkWell(
-                      onTap: () => onValueSelected(value),
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: AppSpacing.md,
-                          vertical: AppSpacing.sm,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.bookmark,
-                                  size: AppIconSize.sm,
-                                  color: colorScheme.primary,
+    overlayEntry.value = OverlayEntry(
+      builder: (overlayContext) {
+        final savedValuesNotifier =
+            ref.read(SavedValuesController.provider(field.id).notifier);
+        final filteredValues =
+            savedValuesNotifier.searchValues(currentText.value);
+
+        return Positioned(
+          width: _getFieldWidth(context),
+          child: CompositedTransformFollower(
+            link: layerLink,
+            showWhenUnlinked: false,
+            offset: const Offset(0, 60),
+            child: Material(
+              elevation: 8,
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              child: Container(
+                constraints: const BoxConstraints(maxHeight: 300),
+                decoration: BoxDecoration(
+                  color: colorScheme.surface,
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                  border: Border.all(
+                      color: colorScheme.outline.withValues(alpha: 0.3)),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (filteredValues.isNotEmpty) ...[
+                      Flexible(
+                        child: ListView.builder(
+                          padding: EdgeInsets.symmetric(
+                              vertical: AppSpacing.xs),
+                          shrinkWrap: true,
+                          itemCount: filteredValues.length,
+                          itemBuilder: (context, index) {
+                            final value = filteredValues[index];
+                            return InkWell(
+                              onTap: () {
+                                controller.text = value.value;
+                                ref
+                                    .read(FormController.provider(formParams)
+                                        .notifier)
+                                    .updateField(field.id, value.value);
+                                final savedValues = ref.read(
+                                    SavedValuesController.provider(field.id));
+                                final idx = savedValues.indexOf(value);
+                                if (idx >= 0) {
+                                  ref
+                                      .read(SavedValuesController.provider(
+                                              field.id)
+                                          .notifier)
+                                      .updateUsage(idx);
+                                }
+                                FocusScope.of(context).unfocus();
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: AppSpacing.md,
+                                  vertical: AppSpacing.sm,
                                 ),
-                                SizedBox(width: AppSpacing.sm),
-                                Expanded(
-                                  child: Text(
-                                    value.name,
-                                    style: textTheme.bodyMedium?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                      color: colorScheme.onSurface,
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.bookmark,
+                                          size: AppIconSize.sm,
+                                          color: colorScheme.primary,
+                                        ),
+                                        SizedBox(width: AppSpacing.sm),
+                                        Expanded(
+                                          child: Text(
+                                            value.name,
+                                            style: textTheme.bodyMedium
+                                                ?.copyWith(
+                                              fontWeight: FontWeight.w600,
+                                              color:
+                                                  colorScheme.onSurface,
+                                            ),
+                                            overflow:
+                                                TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                        if (value.usageCount > 0)
+                                          Container(
+                                            padding:
+                                                EdgeInsets.symmetric(
+                                              horizontal: AppSpacing.xs,
+                                              vertical: 2,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: colorScheme
+                                                  .primaryContainer,
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                      AppRadius.sm / 2),
+                                            ),
+                                            child: Text(
+                                              '${value.usageCount}',
+                                              style: textTheme.bodySmall
+                                                  ?.copyWith(
+                                                fontSize: AppFontSize.xs,
+                                                color:
+                                                    colorScheme.primary,
+                                                fontWeight:
+                                                    FontWeight.w600,
+                                              ),
+                                            ),
+                                          ),
+                                      ],
                                     ),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                if (value.usageCount > 0)
-                                  Container(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: AppSpacing.xs,
-                                      vertical: 2,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: colorScheme.primaryContainer,
-                                      borderRadius: BorderRadius.circular(AppRadius.sm / 2),
-                                    ),
-                                    child: Text(
-                                      '${value.usageCount}',
-                                      style: textTheme.bodySmall?.copyWith(
-                                        fontSize: AppFontSize.xs,
-                                        color: colorScheme.primary,
-                                        fontWeight: FontWeight.w600,
+                                    SizedBox(
+                                        height: AppSpacing.xs / 2),
+                                    Padding(
+                                      padding: EdgeInsets.only(
+                                          left: AppIconSize.sm +
+                                              AppSpacing.sm),
+                                      child: Text(
+                                        value.value,
+                                        style: textTheme.bodySmall
+                                            ?.copyWith(
+                                          color: colorScheme
+                                              .onSurfaceVariant,
+                                        ),
+                                        overflow:
+                                            TextOverflow.ellipsis,
                                       ),
                                     ),
-                                  ),
-                              ],
-                            ),
-                            SizedBox(height: AppSpacing.xs / 2),
-                            Padding(
-                              padding: EdgeInsets.only(left: AppIconSize.sm + AppSpacing.sm),
-                              child: Text(
-                                value.value,
-                                style: textTheme.bodySmall?.copyWith(
-                                  color: colorScheme.onSurfaceVariant,
+                                  ],
                                 ),
-                                overflow: TextOverflow.ellipsis,
                               ),
+                            );
+                          },
+                        ),
+                      ),
+                      Divider(
+                          height: 1,
+                          color: colorScheme.outline
+                              .withValues(alpha: 0.2)),
+                    ] else if (currentText.value.isEmpty) ...[
+                      Padding(
+                        padding: EdgeInsets.all(AppSpacing.md),
+                        child: Center(
+                          child: Text(
+                            l10n.noSavedValues,
+                            style: textTheme.bodyMedium?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
                             ),
-                          ],
+                          ),
                         ),
                       ),
-                    );
-                  },
-                ),
-              ),
-              Divider(height: 1, color: colorScheme.outline.withValues(alpha: 0.2)),
-            ] else if (searchText.isEmpty) ...[
-              Padding(
-                padding: EdgeInsets.all(AppSpacing.md),
-                child: Center(
-                  child: Text(
-                    l10n.noSavedValues,
-                    style: textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ),
-              ),
-              Divider(height: 1, color: colorScheme.outline.withValues(alpha: 0.2)),
-            ],
-
-            // Footer: Manage button
-            Padding(
-              padding: EdgeInsets.all(AppSpacing.xs),
-              child: InkWell(
-                onTap: onManageValues,
-                borderRadius: BorderRadius.circular(AppRadius.sm),
-                child: Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: AppSpacing.sm,
-                    vertical: AppSpacing.sm,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.settings,
-                        size: AppIconSize.sm,
-                        color: colorScheme.primary,
-                      ),
-                      SizedBox(width: AppSpacing.sm),
-                      Text(
-                        l10n.manageSavedValues,
-                        style: textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.primary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                      Divider(
+                          height: 1,
+                          color: colorScheme.outline
+                              .withValues(alpha: 0.2)),
                     ],
-                  ),
+                    // Footer: Manage button
+                    Padding(
+                      padding: EdgeInsets.all(AppSpacing.xs),
+                      child: InkWell(
+                        onTap: () {
+                          FocusScope.of(context).unfocus();
+                          onBookmarkPressed();
+                        },
+                        borderRadius:
+                            BorderRadius.circular(AppRadius.sm),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: AppSpacing.sm,
+                            vertical: AppSpacing.sm,
+                          ),
+                          child: Row(
+                            mainAxisAlignment:
+                                MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.settings,
+                                size: AppIconSize.sm,
+                                color: colorScheme.primary,
+                              ),
+                              SizedBox(width: AppSpacing.sm),
+                              Text(
+                                l10n.manageSavedValues,
+                                style:
+                                    textTheme.bodyMedium?.copyWith(
+                                  color: colorScheme.primary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
+
+    overlay.insert(overlayEntry.value!);
+  }
+
+  void _hideOverlay(ObjectRef<OverlayEntry?> overlayEntry) {
+    overlayEntry.value?.remove();
+    overlayEntry.value = null;
+  }
+
+  double _getFieldWidth(BuildContext context) {
+    final renderBox = context.findRenderObject() as RenderBox?;
+    return renderBox?.size.width ?? MediaQuery.of(context).size.width - 40;
   }
 
   IconData _getFieldIcon(String fieldId) {
